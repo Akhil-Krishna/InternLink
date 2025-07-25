@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>My Posted Internships</h2>
+
+{% if internships %}
+<table class="table table-bordered">
+  <thead><tr><th>Title</th><th>Location</th><th>Deadline</th><th>Applications</th></tr></thead>
+  <tbody>
+    {% for i in internships %}
+    <tr>
+      <td>{{ i[2] }}</td>
+      <td>{{ i[4] }}</td>
+      <td>{{ i[7] }}</td>
+      <td><a href="{{ url_for('view_applicants', internship_id=i[0]) }}" class="btn btn-sm btn-info">View</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No internships posted yet.</p>
+{% endif %}
+{% endblock %}

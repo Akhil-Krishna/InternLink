@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Applicants for Internship ID {{ internship_id }}</h2>
+
+<table class="table table-bordered">
+  <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Cover Letter</th><th>Resume</th><th>Action</th></tr></thead>
+  <tbody>
+    {% for a in applicants %}
+    <tr>
+      <td>{{ a[1] }}</td>
+      <td>{{ a[2] }}</td>
+      <td>{{ a[3] }}</td>
+      <td>{{ a[5] }}</td>
+      <td>
+        {% if a[6] %}
+          <a href="{{ url_for('static', filename='uploads/resumes/' ~ a[6]) }}" target="_blank">View Resume</a>
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+      <td>
+        <form method="POST" action="{{ url_for('update_application_status', internship_id=internship_id, student_id=a[0]) }}">
+          <select name="status" class="form-select form-select-sm mb-1">
+            <option value="Pending" {% if a[3] == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Accepted" {% if a[3] == 'Accepted' %}selected{% endif %}>Accept</option>
+            <option value="Rejected" {% if a[3] == 'Rejected' %}selected{% endif %}>Reject</option>
+          </select>
+          <input type="text" name="feedback" placeholder="Optional feedback" class="form-control form-control-sm mb-1" value="{{ a[4] }}">
+          <button class="btn btn-sm btn-primary">Update</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
