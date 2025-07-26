@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Admin Dashboard</h2>
+
+  <div class="row text-center">
+    <div class="col-md-3 mb-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h4 class="card-title">{{ total_students }}</h4>
+          <p class="card-text">Total Students</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h4 class="card-title">{{ total_employers }}</h4>
+          <p class="card-text">Total Employers</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h4 class="card-title">{{ total_internships }}</h4>
+          <p class="card-text">Internships Posted</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h4 class="card-title">{{ total_applications }}</h4>
+          <p class="card-text">Applications Submitted</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="text-center mt-4">
+  <a href="{{ url_for('manage_users') }}" class="btn btn-outline-dark">Manage Users</a>
+</div>
+
+{% endblock %}

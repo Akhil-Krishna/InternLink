@@ -12,6 +12,8 @@ CREATE TABLE user (
     user_id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
     full_name VARCHAR(100) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     password_hash CHAR(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
     profile_image VARCHAR(255) DEFAULT 'default_profile.png',
@@ -56,6 +58,7 @@ CREATE TABLE internship (
     stipend VARCHAR(50) DEFAULT NULL,
     number_of_openings INT DEFAULT 1,
     additional_req TEXT DEFAULT NULL,
+    posted_date DATE NOT NULL,
     PRIMARY KEY (internship_id),
     FOREIGN KEY (company_id) REFERENCES employer(emp_id) ON DELETE CASCADE
 );

@@ -9,8 +9,8 @@
     <tr>
       <td>{{ a[1] }}</td>
       <td>{{ a[2] }}</td>
-      <td>{{ a[3] }}</td>
       <td>{{ a[5] }}</td>
+      <td>{{ a[7] }}</td>
       <td>
         {% if a[6] %}
           <a href="{{ url_for('static', filename='uploads/resumes/' ~ a[6]) }}" target="_blank">View Resume</a>
@@ -21,11 +21,11 @@
       <td>
         <form method="POST" action="{{ url_for('update_application_status', internship_id=internship_id, student_id=a[0]) }}">
           <select name="status" class="form-select form-select-sm mb-1">
-            <option value="Pending" {% if a[3] == 'Pending' %}selected{% endif %}>Pending</option>
-            <option value="Accepted" {% if a[3] == 'Accepted' %}selected{% endif %}>Accept</option>
-            <option value="Rejected" {% if a[3] == 'Rejected' %}selected{% endif %}>Reject</option>
+            <option value="Pending" {% if a[5] == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Accepted" {% if a[5] == 'Accepted' %}selected{% endif %}>Accept</option>
+            <option value="Rejected" {% if a[5] == 'Rejected' %}selected{% endif %}>Reject</option>
           </select>
-          <input type="text" name="feedback" placeholder="Optional feedback" class="form-control form-control-sm mb-1" value="{{ a[4] }}">
+          <input type="text" name="feedback" placeholder="Optional feedback" class="form-control form-control-sm mb-1" value="{{ a[6] }}">
           <button class="btn btn-sm btn-primary">Update</button>
         </form>
       </td>

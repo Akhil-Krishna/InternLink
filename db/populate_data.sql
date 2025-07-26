@@ -1,73 +1,66 @@
 -- InternLink Database Population Script
--- COMP639 Studio Project - Individual Assignment
--- Populates database with realistic test data
 
 USE internlink;
 
--- Insert Users (Students, Employers, Admins)
--- Note: All passwords are hashed using bcrypt. The original passwords are listed in comments for testing
-
 -- STUDENTS (20 students)
--- Password: student123
-INSERT INTO user (username, full_name, email, password_hash, profile_image, role, status) VALUES
-('sarah.chen', 'Sarah Chen', 'sarah.chen@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'sarah_chen.jpg', 'student', 'active'),
-('james.wilson', 'James Wilson', 'james.wilson@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'james_wilson.jpg', 'student', 'active'),
-('emily.martinez', 'Emily Martinez', 'emily.martinez@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'emily_martinez.jpg', 'student', 'active'),
-('alex.thompson', 'Alex Thompson', 'alex.thompson@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'alex_thompson.jpg', 'student', 'active'),
-('priya.sharma', 'Priya Sharma', 'priya.sharma@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'priya_sharma.jpg', 'student', 'active'),
-('david.brown', 'David Brown', 'david.brown@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'david_brown.jpg', 'student', 'active'),
-('lisa.wang', 'Lisa Wang', 'lisa.wang@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'lisa_wang.jpg', 'student', 'active'),
-('michael.jones', 'Michael Jones', 'michael.jones@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'michael_jones.jpg', 'student', 'active'),
-('aisha.patel', 'Aisha Patel', 'aisha.patel@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'aisha_patel.jpg', 'student', 'active'),
-('ryan.garcia', 'Ryan Garcia', 'ryan.garcia@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'ryan_garcia.jpg', 'student', 'active'),
-('natalie.kim', 'Natalie Kim', 'natalie.kim@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'natalie_kim.jpg', 'student', 'active'),
-('tom.anderson', 'Tom Anderson', 'tom.anderson@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'tom_anderson.jpg', 'student', 'active'),
-('sophia.rodriguez', 'Sophia Rodriguez', 'sophia.rodriguez@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'sophia_rodriguez.jpg', 'student', 'active'),
-('ethan.lee', 'Ethan Lee', 'ethan.lee@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'ethan_lee.jpg', 'student', 'active'),
-('olivia.taylor', 'Olivia Taylor', 'olivia.taylor@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'olivia_taylor.jpg', 'student', 'active'),
-('lucas.moore', 'Lucas Moore', 'lucas.moore@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'lucas_moore.jpg', 'student', 'active'),
-('isabella.clark', 'Isabella Clark', 'isabella.clark@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'isabella_clark.jpg', 'student', 'active'),
-('noah.walker', 'Noah Walker', 'noah.walker@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'noah_walker.jpg', 'student', 'active'),
-('zoe.allen', 'Zoe Allen', 'zoe.allen@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'zoe_allen.jpg', 'student', 'active'),
-('jacob.hill', 'Jacob Hill', 'jacob.hill@student.uni.nz', '$2b$12$LQv3c1yX8LyaH7CjF5Y8PO4f1G5Q3n9M8KvV4J2XmZ9p7R1sT0uV3', 'jacob_hill.jpg', 'student', 'active');
+INSERT INTO user (username, full_name,first_name,last_name, email, password_hash, profile_image, role, status) VALUES
+('sarah.chen', 'Sarah Chen','Sarah','Chen', 'sarah.chen@student.uni.nz', '$2b$12$HejQuYpYzvLpW2A5pl7.MOJmic4S3DW2T4RteQMzHjTkM8r8cJRwq', 'sarah_chen.jpg', 'student', 'active'),
+('james.wilson', 'James Wilson','James','Wilson', 'james.wilson@student.uni.nz', '$2b$12$gSGAr1qOu.lDbxt2.v3J2eym5.Ic4fqI../7cQtCAcza9FkA2E/Zi', 'james_wilson.jpg', 'student', 'active'),
+('emily.martinez', 'Emily Martinez','Emily','Martinez', 'emily.martinez@student.uni.nz', '$2b$12$tR0RS.uV9pJ.lzFqPOSezu81Rx/UeVLIdNIA/0mgGCZibBJi..xNW', 'emily_martinez.jpg', 'student', 'active'),
+('alex.thompson', 'Alex Thompson','Alex','Thompson', 'alex.thompson@student.uni.nz', '$2b$12$crJcLBNv34x95ufIxmo4.uvRO23tXovycFYd3tLp7837XqUn6Qd3i', 'alex_thompson.jpg', 'student', 'active'),
+('priya.sharma', 'Priya Sharma','Priya' ,'Sharma','priya.sharma@student.uni.nz', '$2b$12$vOqommsSUvoE3wXmBLoQA.pncS2zcXuHmr2PwSiRR0oFbM8TI3HpC', 'priya_sharma.jpg', 'student', 'active'),
+('david.brown', 'David Brown','David','Brown', 'david.brown@student.uni.nz', '$2b$12$GHiTwkYrkokw58j1FYyiBuTgu4do8L5Y1UIkucQ5dOvyuP2bvMypm', 'david_brown.jpg', 'student', 'active'),
+('lisa.wang', 'Lisa Wang','Lisa','Wang', 'lisa.wang@student.uni.nz', '$2b$12$1ffIT7UietAsP/yCQL1yeO8.aJAKX72DUQGRcaAYY2CVhyK.u4zK2', 'lisa_wang.jpg', 'student', 'active'),
+('michael.jones', 'Michael Jones','Michael','Jones', 'michael.jones@student.uni.nz', '$2b$12$j3Ap2BvVD6vc3CZAW1lX8Of2Iy4.Bxcw6qSedABQw.d4kxQrexCwu', 'michael_jones.jpg', 'student', 'active'),
+('aisha.patel', 'Aisha Patel','Aisha','Patel', 'aisha.patel@student.uni.nz', '$2b$12$/zCtHapg1B0ZI5XpSjjcE.9tPcCOtb4fquVGb2ybDpxr01CWnpJPK', 'aisha_patel.jpg', 'student', 'active'),
+('ryan.garcia', 'Ryan Garcia','Ryan','Garcia','ryan.garcia@student.uni.nz', '$2b$12$4tEqKA482lv633zjNrC1he6cFv4SxlGCDQFrtqokbLUMaIjrdjGnS', 'ryan_garcia.jpg', 'student', 'active'),
+('natalie.kim', 'Natalie Kim','Natalie','Kim', 'natalie.kim@student.uni.nz', '$2b$12$e087zFrxkZMe4.xtJHYiEubkkeCnY9E266/QHNGQAC96KcAgbIc/C', 'natalie_kim.jpg', 'student', 'active'),
+('tom.anderson', 'Tom Anderson','Tom','Anderson', 'tom.anderson@student.uni.nz', '$2b$12$OVwPNzuZeiLkqGY7yefvBOb7vcPhhlkvQWXjFpJwyJSiDZqUi48z6', 'tom_anderson.jpg', 'student', 'active'),
+('sophia.rodriguez', 'Sophia Rodriguez','Sophia','Rodriguez', 'sophia.rodriguez@student.uni.nz', '$2b$12$DX9LrFlCXKKs.7S.zlrEY.yFh/AuPvNrdLk/C3jO02iqKEqpf8cpK', 'sophia_rodriguez.jpg', 'student', 'active'),
+('ethan.lee', 'Ethan Lee','Ethan','Lee', 'ethan.lee@student.uni.nz', '$2b$12$uN4Dxfg4FEazSNXAOshV8.mpDK.EafhV8nVFFWpDcC2pvHs4YPmSC', 'ethan_lee.jpg', 'student', 'active'),
+('olivia.taylor', 'Olivia Taylor','Olivia','Taylor', 'olivia.taylor@student.uni.nz', '$2b$12$FJMPwhHlz6Wl1OL.hqwl5u1XA7kWta5B9qlf5skOlS18QrlNJI4fy', 'olivia_taylor.jpg', 'student', 'active'),
+('lucas.moore', 'Lucas Moore','Lucas','Moore', 'lucas.moore@student.uni.nz', '$2b$12$N7aV4YLeu1TZtRGwRjwaH.BCVSG5Z2NItoBHNdSov6uqoBGnTZvkG', 'lucas_moore.jpg', 'student', 'active'),
+('isabella.clark', 'Isabella Clark','Isabella','Clark', 'isabella.clark@student.uni.nz', '$2b$12$n6MTBgQTth6ydw2BCV9dXu37f08GoXY2lokol/pPRZ8dfBgXXI7su', 'isabella_clark.jpg', 'student', 'active'),
+('noah.walker', 'Noah Walker','Noah','Walker', 'noah.walker@student.uni.nz', '$2b$12$mwam7B8dGMhAze8FtlVOt.xfyEisFD8nvgY5XWchpLB4fF4ufSTtG', 'noah_walker.jpg', 'student', 'active'),
+('zoe.allen', 'Zoe Allen','Zoe','Allen' ,'zoe.allen@student.uni.nz', '$2b$12$C10BCYsz3wQkt7epF.uvBe3VJ4I0Df1eEn6.m8bkbMn/A0ZO3sg5q', 'zoe_allen.jpg', 'student', 'active'),
+('jacob.hill', 'Jacob Hill','Jacob','Hill', 'jacob.hill@student.uni.nz', '$2b$12$CEdQuD1ixzm9qX/TpFtpJONFzdN9gzKoqb5l1jj71a4VWrQre871i', 'jacob_hill.jpg', 'student', 'active');
 
 -- EMPLOYERS (5 employers)
--- Password: employer123
-INSERT INTO user (username, full_name, email, password_hash, profile_image, role, status) VALUES
-('techcorp.hr', 'Jessica Martinez', 'jessica.martinez@techcorp.co.nz', '$2b$12$9xK2L5vY7qW3mR8nP4sZ1O6f2H4Q7n0M9KvV3J1XmZ8p6R0sT9uV2', 'jessica_martinez.jpg', 'employer', 'active'),
-('innovate.recruit', 'Mark Thompson', 'mark.thompson@innovatesolutions.co.nz', '$2b$12$9xK2L5vY7qW3mR8nP4sZ1O6f2H4Q7n0M9KvV3J1XmZ8p6R0sT9uV2', 'mark_thompson.jpg', 'employer', 'active'),
-('fintech.careers', 'Rachel Chen', 'rachel.chen@fintechplus.co.nz', '$2b$12$9xK2L5vY7qW3mR8nP4sZ1O6f2H4Q7n0M9KvV3J1XmZ8p6R0sT9uV2', 'rachel_chen.jpg', 'employer', 'active'),
-('green.energy', 'Daniel Williams', 'daniel.williams@greenenergy.co.nz', '$2b$12$9xK2L5vY7qW3mR8nP4sZ1O6f2H4Q7n0M9KvV3J1XmZ8p6R0sT9uV2', 'daniel_williams.jpg', 'employer', 'active'),
-('media.creative', 'Sophie Brown', 'sophie.brown@creativemedia.co.nz', '$2b$12$9xK2L5vY7qW3mR8nP4sZ1O6f2H4Q7n0M9KvV3J1XmZ8p6R0sT9uV2', 'sophie_brown.jpg', 'employer', 'active');
+INSERT INTO user (username, full_name,first_name,last_name, email, password_hash, profile_image, role, status) VALUES
+('techcorp.hr', 'Jessica Martinez','Jessica','Martinez', 'jessica.martinez@techcorp.co.nz', '$2b$12$SmdXSH/FCh0xRToBgaTENuMHTUWzHyaC6PhWeAPG/920aRN92FVKa', 'jessica_martinez.jpg', 'employer', 'active'),
+('innovate.recruit', 'Mark Thompson','Mark','Thompson', 'mark.thompson@innovatesolutions.co.nz', '$2b$12$BHGEEXdx/B.CrBLC/iRhue/juMB3xOagWNweEjfIljXReEt18xFcG', 'mark_thompson.jpg', 'employer', 'active'),
+('fintech.careers', 'Rachel Chen','Rachel','Chen', 'rachel.chen@fintechplus.co.nz', '$2b$12$mlJLaJH6tKGI2OmHUeAc6ORqISlc633MJ3F8ZlQimkpO/3CTy/F.W', 'rachel_chen.jpg', 'employer', 'active'),
+('green.energy', 'Daniel Williams','Daniel','Williams', 'daniel.williams@greenenergy.co.nz', '$2b$12$xtLueyisgHXvnhm.mZpeQu2KbstdHBuWQStRIDCAejD1ulCK1r036', 'daniel_williams.jpg', 'employer', 'active'),
+('media.creative', 'Sophie Brown','Sophie','Brown', 'sophie.brown@creativemedia.co.nz', '$2b$12$bF4EdAhq3sZjzODKOXbhc.0/QHq/t5/8i9EVBeJ3PmrfKKrA8SlvW', 'sophie_brown.jpg', 'employer', 'active');
 
 -- ADMINISTRATORS (2 admins)
--- Password: admin123
-INSERT INTO user (username, full_name, email, password_hash, profile_image, role, status) VALUES
-('admin.system', 'Admin System', 'admin@internlink.co.nz', '$2b$12$8zJ1K4vX6pV2lQ7mO3rY0N5e1G3P6m8L8JuU2I0WlY7o5Q9rS8tU1', 'admin_system.jpg', 'admin', 'active'),
-('admin.support', 'Admin Support', 'support@internlink.co.nz', '$2b$12$8zJ1K4vX6pV2lQ7mO3rY0N5e1G3P6m8L8JuU2I0WlY7o5Q9rS8tU1', 'admin_support.jpg', 'admin', 'active');
-
+INSERT INTO user (username, full_name,first_name,last_name,email, password_hash, profile_image, role, status) VALUES
+('admin.system', 'Admin System','Admin','System', 'admin@internlink.co.nz', '$2b$12$OKZ8.3wV6geZQZJ5F076MurqrqjVVQ3WhkhcjsBpn3TkaQv9WaNWW', 'admin_system.jpg', 'admin', 'active'),
+('admin.support', 'Admin Support','Admin','Support','support@internlink.co.nz', '$2b$12$E/iuyElJKmVYJt8wusnovuBZqoFn6OzW.wfqZ2jbhJaZ6tELBXi1m', 'admin_support.jpg', 'admin', 'active');
 -- Insert Student details
+
+
 INSERT INTO student (user_id, university, course, resume_path) VALUES
-(1, 'University of Auckland', 'Computer Science', 'resumes/sarah_chen_resume.pdf'),
-(2, 'Victoria University of Wellington', 'Software Engineering', 'resumes/james_wilson_resume.pdf'),
-(3, 'University of Canterbury', 'Information Systems', 'resumes/emily_martinez_resume.pdf'),
-(4, 'Massey University', 'Data Science', 'resumes/alex_thompson_resume.pdf'),
-(5, 'Auckland University of Technology', 'Computer Science', 'resumes/priya_sharma_resume.pdf'),
-(6, 'University of Otago', 'Information Technology', 'resumes/david_brown_resume.pdf'),
-(7, 'University of Waikato', 'Computer Science', 'resumes/lisa_wang_resume.pdf'),
-(8, 'Victoria University of Wellington', 'Software Engineering', 'resumes/michael_jones_resume.pdf'),
-(9, 'University of Auckland', 'Information Systems', 'resumes/aisha_patel_resume.pdf'),
-(10, 'Auckland University of Technology', 'Data Science', 'resumes/ryan_garcia_resume.pdf'),
-(11, 'University of Canterbury', 'Computer Science', 'resumes/natalie_kim_resume.pdf'),
-(12, 'Massey University', 'Software Engineering', 'resumes/tom_anderson_resume.pdf'),
-(13, 'University of Otago', 'Information Technology', 'resumes/sophia_rodriguez_resume.pdf'),
-(14, 'University of Waikato', 'Computer Science', 'resumes/ethan_lee_resume.pdf'),
-(15, 'Victoria University of Wellington', 'Data Science', 'resumes/olivia_taylor_resume.pdf'),
-(16, 'University of Auckland', 'Software Engineering', 'resumes/lucas_moore_resume.pdf'),
-(17, 'Auckland University of Technology', 'Information Systems', 'resumes/isabella_clark_resume.pdf'),
-(18, 'University of Canterbury', 'Computer Science', 'resumes/noah_walker_resume.pdf'),
-(19, 'Massey University', 'Information Technology', 'resumes/zoe_allen_resume.pdf'),
-(20, 'University of Otago', 'Data Science', 'resumes/jacob_hill_resume.pdf');
+(1, 'University of Auckland', 'Computer Science', 'sarah_chen_resume.pdf'),
+(2, 'Victoria University of Wellington', 'Software Engineering', 'james_wilson_resume.pdf'),
+(3, 'University of Canterbury', 'Information Systems', 'emily_martinez_resume.pdf'),
+(4, 'Massey University', 'Data Science', 'alex_thompson_resume.pdf'),
+(5, 'Auckland University of Technology', 'Computer Science', 'priya_sharma_resume.pdf'),
+(6, 'University of Otago', 'Information Technology', 'david_brown_resume.pdf'),
+(7, 'University of Waikato', 'Computer Science', 'lisa_wang_resume.pdf'),
+(8, 'Victoria University of Wellington', 'Software Engineering', 'michael_jones_resume.pdf'),
+(9, 'University of Auckland', 'Information Systems', 'aisha_patel_resume.pdf'),
+(10, 'Auckland University of Technology', 'Data Science', 'ryan_garcia_resume.pdf'),
+(11, 'University of Canterbury', 'Computer Science', 'natalie_kim_resume.pdf'),
+(12, 'Massey University', 'Software Engineering', 'tom_anderson_resume.pdf'),
+(13, 'University of Otago', 'Information Technology', 'sophia_rodriguez_resume.pdf'),
+(14, 'University of Waikato', 'Computer Science', 'ethan_lee_resume.pdf'),
+(15, 'Victoria University of Wellington', 'Data Science', 'olivia_taylor_resume.pdf'),
+(16, 'University of Auckland', 'Software Engineering', 'lucas_moore_resume.pdf'),
+(17, 'Auckland University of Technology', 'Information Systems', 'isabella_clark_resume.pdf'),
+(18, 'University of Canterbury', 'Computer Science', 'noah_walker_resume.pdf'),
+(19, 'Massey University', 'Information Technology', 'zoe_allen_resume.pdf'),
+(20, 'University of Otago', 'Data Science', 'jacob_hill_resume.pdf');
 
 -- Insert Employer details
 INSERT INTO employer (user_id, company_name, company_description, website, logo_path) VALUES
@@ -78,27 +71,28 @@ INSERT INTO employer (user_id, company_name, company_description, website, logo_
 (25, 'Creative Media Hub', 'Digital marketing and media production company creating engaging content for modern brands.', 'https://www.creativemedia.co.nz', 'logos/creativemedia_logo.png');
 
 -- Insert Internships (20+ internships)
-INSERT INTO internship (company_id, title, description, location, duration, skills_required, deadline, stipend, number_of_openings, additional_req) VALUES
-(1, 'Software Development Intern', 'Join our development team to work on cloud-based enterprise applications using modern technologies like React, Node.js, and AWS.', 'Auckland', '3 months', 'JavaScript, React, Node.js, Git', '2025-09-15', '$400/week', 2, 'Portfolio of personal projects required'),
-(1, 'Data Analytics Intern', 'Analyze large datasets to provide business insights and develop automated reporting solutions using Python and SQL.', 'Auckland', '6 months', 'Python, SQL, Data Visualization, Statistics', '2025-09-30', '$450/week', 1, 'Experience with Pandas and Matplotlib preferred'),
-(1, 'DevOps Engineering Intern', 'Learn infrastructure automation, CI/CD pipelines, and cloud deployment strategies in our DevOps team.', 'Auckland', '4 months', 'Linux, Docker, AWS, Git', '2025-10-01', '$420/week', 1, 'Basic understanding of containerization'),
-(2, 'Frontend Developer Intern', 'Create responsive web interfaces and user experiences for our client projects using modern frontend frameworks.', 'Wellington', '3 months', 'HTML, CSS, JavaScript, Vue.js', '2025-09-20', '$380/week', 2, 'Design portfolio showcasing UI/UX work'),
-(2, 'Mobile App Development Intern', 'Develop cross-platform mobile applications using React Native for iOS and Android platforms.', 'Wellington', '4 months', 'React Native, JavaScript, Mobile Development', '2025-10-05', '$400/week', 1, 'Published app or strong mobile project portfolio'),
-(2, 'Digital Marketing Intern', 'Support digital marketing campaigns, content creation, and social media management for technology clients.', 'Wellington', '3 months', 'Social Media, Content Creation, Analytics', '2025-09-25', '$320/week', 1, 'Strong written communication skills'),
-(3, 'Financial Technology Intern', 'Work on fintech applications including payment processing systems and financial data analysis tools.', 'Christchurch', '6 months', 'Java, Spring Boot, Financial Systems, SQL', '2025-10-10', '$480/week', 2, 'Interest in financial markets and technology'),
-(3, 'Blockchain Development Intern', 'Explore blockchain technology and develop smart contracts for financial applications.', 'Christchurch', '4 months', 'Solidity, Ethereum, JavaScript, Cryptography', '2025-09-28', '$500/week', 1, 'Basic understanding of blockchain concepts'),
-(3, 'Cybersecurity Intern', 'Learn about financial system security, penetration testing, and security compliance frameworks.', 'Christchurch', '5 months', 'Network Security, Python, Ethical Hacking', '2025-10-15', '$460/week', 1, 'Security certifications or coursework preferred'),
-(4, 'Renewable Energy Systems Intern', 'Support the development of smart grid technology and energy management systems.', 'Hamilton', '4 months', 'Python, IoT, Data Analysis, Engineering', '2025-09-18', '$400/week', 2, 'Engineering or environmental science background'),
-(4, 'Environmental Data Analyst Intern', 'Analyze environmental impact data and create sustainability reports for renewable energy projects.', 'Hamilton', '3 months', 'R, Python, Statistics, Environmental Science', '2025-10-20', '$380/week', 1, 'Environmental studies or related field'),
-(4, 'Green Tech Software Intern', 'Develop software solutions for monitoring and optimizing renewable energy systems.', 'Hamilton', '6 months', 'C++, Python, Embedded Systems, MATLAB', '2025-09-12', '$440/week', 1, 'Interest in sustainable technology'),
-(5, 'Digital Content Creation Intern', 'Create engaging digital content including videos, graphics, and interactive media for brand campaigns.', 'Dunedin', '3 months', 'Adobe Creative Suite, Video Editing, Design', '2025-10-08', '$350/week', 2, 'Portfolio of creative work required'),
-(5, 'Web Development Intern', 'Build modern websites and web applications for creative industry clients using latest web technologies.', 'Dunedin', '4 months', 'HTML, CSS, JavaScript, WordPress, PHP', '2025-09-22', '$380/week', 1, 'Strong portfolio of web projects'),
-(5, 'Social Media Strategy Intern', 'Develop and implement social media strategies for creative brands and analyze engagement metrics.', 'Dunedin', '3 months', 'Social Media Marketing, Analytics, Content Strategy', '2025-10-12', '$320/week', 1, 'Experience with social media platforms'),
-(1, 'Machine Learning Intern', 'Work on AI and machine learning projects to enhance our software products with intelligent features.', 'Auckland', '5 months', 'Python, TensorFlow, Machine Learning, Mathematics', '2025-10-25', '$480/week', 1, 'Strong mathematical background and ML coursework'),
-(2, 'UX/UI Design Intern', 'Design user interfaces and conduct user research to improve the usability of our digital products.', 'Wellington', '4 months', 'Figma, Adobe XD, User Research, Prototyping', '2025-09-30', '$400/week', 1, 'Design portfolio and user research experience'),
-(3, 'Quality Assurance Intern', 'Test financial software applications and develop automated testing frameworks to ensure product quality.', 'Christchurch', '3 months', 'Software Testing, Selenium, Test Automation', '2025-10-18', '$360/week', 2, 'Attention to detail and analytical mindset'),
-(4, 'Project Management Intern', 'Assist project managers in coordinating renewable energy projects and client communications.', 'Hamilton', '4 months', 'Project Management, Communication, MS Office', '2025-09-14', '$380/week', 1, 'Strong organizational and communication skills'),
-(5, 'Video Production Intern', 'Produce promotional videos and documentaries for creative industry clients using professional equipment.', 'Dunedin', '6 months', 'Video Production, Final Cut Pro, Cinematography', '2025-10-05', '$420/week', 1, 'Video production portfolio and equipment knowledge');
+INSERT INTO internship (company_id, title, description, location, duration, skills_required, deadline, stipend, number_of_openings, additional_req, posted_date) VALUES
+(1, 'Software Development Intern', 'Join our development team to work on cloud-based enterprise applications using modern technologies like React, Node.js, and AWS.', 'Auckland', '3 months', 'JavaScript, React, Node.js, Git', '2025-09-15', '$400/week', 2, 'Portfolio of personal projects required', '2025-07-01'),
+(1, 'Data Analytics Intern', 'Analyze large datasets to provide business insights and develop automated reporting solutions using Python and SQL.', 'Auckland', '6 months', 'Python, SQL, Data Visualization, Statistics', '2025-09-30', '$450/week', 1, 'Experience with Pandas and Matplotlib preferred', '2025-07-03'),
+(1, 'DevOps Engineering Intern', 'Learn infrastructure automation, CI/CD pipelines, and cloud deployment strategies in our DevOps team.', 'Auckland', '4 months', 'Linux, Docker, AWS, Git', '2025-10-01', '$420/week', 1, 'Basic understanding of containerization', '2025-07-05'),
+(2, 'Frontend Developer Intern', 'Create responsive web interfaces and user experiences for our client projects using modern frontend frameworks.', 'Wellington', '3 months', 'HTML, CSS, JavaScript, Vue.js', '2025-09-20', '$380/week', 2, 'Design portfolio showcasing UI/UX work', '2025-06-28'),
+(2, 'Mobile App Development Intern', 'Develop cross-platform mobile applications using React Native for iOS and Android platforms.', 'Wellington', '4 months', 'React Native, JavaScript, Mobile Development', '2025-10-05', '$400/week', 1, 'Published app or strong mobile project portfolio', '2025-07-02'),
+(2, 'Digital Marketing Intern', 'Support digital marketing campaigns, content creation, and social media management for technology clients.', 'Wellington', '3 months', 'Social Media, Content Creation, Analytics', '2025-09-25', '$320/week', 1, 'Strong written communication skills', '2025-07-04'),
+(3, 'Financial Technology Intern', 'Work on fintech applications including payment processing systems and financial data analysis tools.', 'Christchurch', '6 months', 'Java, Spring Boot, Financial Systems, SQL', '2025-10-10', '$480/week', 2, 'Interest in financial markets and technology', '2025-06-30'),
+(3, 'Blockchain Development Intern', 'Explore blockchain technology and develop smart contracts for financial applications.', 'Christchurch', '4 months', 'Solidity, Ethereum, JavaScript, Cryptography', '2025-09-28', '$500/week', 1, 'Basic understanding of blockchain concepts', '2025-07-06'),
+(3, 'Cybersecurity Intern', 'Learn about financial system security, penetration testing, and security compliance frameworks.', 'Christchurch', '5 months', 'Network Security, Python, Ethical Hacking', '2025-10-15', '$460/week', 1, 'Security certifications or coursework preferred', '2025-07-07'),
+(4, 'Renewable Energy Systems Intern', 'Support the development of smart grid technology and energy management systems.', 'Hamilton', '4 months', 'Python, IoT, Data Analysis, Engineering', '2025-09-18', '$400/week', 2, 'Engineering or environmental science background', '2025-06-25'),
+(4, 'Environmental Data Analyst Intern', 'Analyze environmental impact data and create sustainability reports for renewable energy projects.', 'Hamilton', '3 months', 'R, Python, Statistics, Environmental Science', '2025-10-20', '$380/week', 1, 'Environmental studies or related field', '2025-07-08'),
+(4, 'Green Tech Software Intern', 'Develop software solutions for monitoring and optimizing renewable energy systems.', 'Hamilton', '6 months', 'C++, Python, Embedded Systems, MATLAB', '2025-09-12', '$440/week', 1, 'Interest in sustainable technology', '2025-06-27'),
+(5, 'Digital Content Creation Intern', 'Create engaging digital content including videos, graphics, and interactive media for brand campaigns.', 'Dunedin', '3 months', 'Adobe Creative Suite, Video Editing, Design', '2025-10-08', '$350/week', 2, 'Portfolio of creative work required', '2025-07-09'),
+(5, 'Web Development Intern', 'Build modern websites and web applications for creative industry clients using latest web technologies.', 'Dunedin', '4 months', 'HTML, CSS, JavaScript, WordPress, PHP', '2025-09-22', '$380/week', 1, 'Strong portfolio of web projects', '2025-07-10'),
+(5, 'Social Media Strategy Intern', 'Develop and implement social media strategies for creative brands and analyze engagement metrics.', 'Dunedin', '3 months', 'Social Media Marketing, Analytics, Content Strategy', '2025-10-12', '$320/week', 1, 'Experience with social media platforms', '2025-07-11'),
+(1, 'Machine Learning Intern', 'Work on AI and machine learning projects to enhance our software products with intelligent features.', 'Auckland', '5 months', 'Python, TensorFlow, Machine Learning, Mathematics', '2025-10-25', '$480/week', 1, 'Strong mathematical background and ML coursework', '2025-07-12'),
+(2, 'UX/UI Design Intern', 'Design user interfaces and conduct user research to improve the usability of our digital products.', 'Wellington', '4 months', 'Figma, Adobe XD, User Research, Prototyping', '2025-09-30', '$400/week', 1, 'Design portfolio and user research experience', '2025-07-13'),
+(3, 'Quality Assurance Intern', 'Test financial software applications and develop automated testing frameworks to ensure product quality.', 'Christchurch', '3 months', 'Software Testing, Selenium, Test Automation', '2025-10-18', '$360/week', 2, 'Attention to detail and analytical mindset', '2025-07-14'),
+(4, 'Project Management Intern', 'Assist project managers in coordinating renewable energy projects and client communications.', 'Hamilton', '4 months', 'Project Management, Communication, MS Office', '2025-09-14', '$380/week', 1, 'Strong organizational and communication skills', '2025-07-15'),
+(5, 'Video Production Intern', 'Produce promotional videos and documentaries for creative industry clients using professional equipment.', 'Dunedin', '6 months', 'Video Production, Final Cut Pro, Cinematography', '2025-10-05', '$420/week', 1, 'Video production portfolio and equipment knowledge', '2025-07-16');
+
 
 -- Insert Applications (20+ applications with varied statuses)
 INSERT INTO application (student_id, internship_id, status, feedback, cover_letter, resume_path, application_date) VALUES
@@ -121,4 +115,4 @@ INSERT INTO application (student_id, internship_id, status, feedback, cover_lett
 (17, 11, 'Pending', NULL, 'Environmental data analysis combines my love for data science with environmental advocacy. This role would allow me to contribute to sustainability efforts.', 'resumes/isabella_clark_resume.pdf', '2025-07-20 09:50:00'),
 (18, 15, 'Accepted', 'Strong social media understanding and excellent communication skills.', 'Social media strategy is about storytelling and engagement. My experience managing university social accounts demonstrates my ability to build online communities.', 'resumes/noah_walker_resume.pdf', '2025-07-14 12:10:00'),
 (19, 18, 'Pending', NULL, 'Quality assurance ensures software excellence. My analytical mindset and attention to detail make me well-suited for testing and improving software quality.', 'resumes/zoe_allen_resume.pdf', '2025-07-21 15:25:00'),
-(16, 10, 'Rejected', 'Lack of required skill', 'Renewable energy projects with strong analytical skills.', 'resumes/lucas_moore_resume.pdf', '2025-07-10 16:15:00'),
+(16, 10, 'Rejected', 'Lack of required skill', 'Renewable energy projects with strong analytical skills.', 'resumes/lucas_moore_resume.pdf', '2025-07-10 16:15:00');

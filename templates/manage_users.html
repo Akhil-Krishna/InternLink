@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">User Management</h2>
+
+  <!-- Filter Form -->
+  <form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+      <input type="text" name="fname" class="form-control" placeholder="First Name" value="{{ filters.fname }}">
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="lname" class="form-control" placeholder="Last Name" value="{{ filters.lname }}">
+    </div>
+    <div class="col-md-2">
+      <select name="role" class="form-select">
+        <option value="">All Roles</option>
+        <option value="student" {% if filters.role == 'student' %}selected{% endif %}>Student</option>
+        <option value="employer" {% if filters.role == 'employer' %}selected{% endif %}>Employer</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select name="status" class="form-select">
+        <option value="">All Status</option>
+        <option value="active" {% if filters.status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if filters.status == 'inactive' %}selected{% endif %}>Inactive</option>
+      </select>
+    </div>
+    <div class="col-md-2 d-grid">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  <!-- User Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-light text-center">
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Full Name</th>
+          <th>First</th>
+          <th>Last</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td class="text-center">{{ user[0] }}</td>
+          <td>{{ user[1] }}</td>
+          <td>{{ user[4] }} {{ user[5] }}</td> <!-- Full Name = First + Last -->
+          <td>{{ user[4] }}</td>
+          <td>{{ user[5] }}</td>
+          <td class="text-capitalize text-center">{{ user[2] }}</td>
+          <td class="text-capitalize text-center">{{ user[3] }}</td>
+          <td class="text-center">
+            <a href="{{ url_for('toggle_user_status', user_id=user[0]) }}"
+               class="btn btn-sm {% if user[3] == 'active' %}btn-danger{% else %}btn-success{% endif %}">
+              {% if user[3] == 'active' %}Deactivate{% else %}Activate{% endif %}
+            </a>
+          </td>
+          <td>
+            <a href="#" class="btn btn-sm btn-primary">View Profile</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -2,14 +2,25 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Register (Student)</h2>
-<form method="POST">
+<form method="POST"  enctype="multipart/form-data">
   <div class="mb-2"><label>Username</label><input type="text" name="username" class="form-control" required></div>
   <div class="mb-2"><label>Email</label><input type="email" name="email" class="form-control" required></div>
   <div class="mb-2"><label>Password</label><input type="password" name="password" class="form-control" required></div>
   <div class="mb-2"><label>Confirm Password</label><input type="password" name="confirm" class="form-control" required></div>
-  <div class="mb-2"><label>Full Name</label><input type="text" name="full_name" class="form-control" required></div>
+  <div class="mb-2"><label>First Name</label><input type="text" name="first_name" class="form-control" required></div>
+  <div class="mb-2"><label>Last Name</label><input type="text" name="last_name" class="form-control" required></div>
   <div class="mb-2"><label>University</label><input type="text" name="university" class="form-control"></div>
   <div class="mb-2"><label>Course</label><input type="text" name="course" class="form-control"></div>
+  <div class="mb-3">
+  <label for="profile_pic" class="form-label">Profile Picture</label>
+  <input type="file" name="profile_pic" class="form-control" accept="image/*" required>
+</div>
+
+<div class="mb-3">
+  <label for="resume" class="form-label">Resume (PDF)</label>
+  <input type="file" name="resume" class="form-control" accept=".pdf" required>
+</div>
+
   <button type="submit" class="btn btn-primary">Register</button>
 </form>
 {% endblock %}

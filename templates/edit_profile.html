@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <h3>Edit Profile</h3>
+
+    <form method="POST" enctype="multipart/form-data" class="row g-4 mt-3">
+
+        <!-- Profile Picture Upload -->
+        <div class="col-md-12 text-center">
+            {% if profile.profile_image %}
+                <img src="{{ url_for('static', filename='uploads/images/' + profile.profile_image) }}"
+                     alt="Current Profile Picture" class="rounded-circle mb-2" width="120" height="120">
+            {% endif %}
+            <div>
+                <label class="form-label">Change Profile Picture</label>
+                <input type="file" name="profile_pic" class="form-control-sm">
+            </div>
+        </div>
+
+        <!-- First Name / Last Name -->
+        <div class="col-md-6">
+            <label class="form-label">First Name</label>
+            <input type="text" name="first_name" class="form-control" value="{{ profile.first_name }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Last Name</label>
+            <input type="text" name="last_name" class="form-control" value="{{ profile.last_name }}" required>
+        </div>
+
+        <!-- Email (readonly) -->
+        <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" value="{{ profile.email }}" readonly>
+        </div>
+
+        <!-- Role (readonly) -->
+        <div class="col-md-6">
+            <label class="form-label">Role</label>
+            <input type="text" class="form-control" value="{{ role|capitalize }}" readonly>
+        </div>
+
+        {% if role == 'student' %}
+            <div class="col-md-6">
+                <label class="form-label">University</label>
+                <input type="text" name="university" class="form-control" value="{{ profile.university }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Course</label>
+                <input type="text" name="course" class="form-control" value="{{ profile.course }}">
+            </div>
+
+            <div class="col-md-12">
+                <label class="form-label">Upload New Resume (optional)</label>
+                <input type="file" name="resume" class="form-control">
+                {% if profile.resume_path %}
+                    <div class="mt-2">
+                        <a href="{{ url_for('static', filename='uploads/resumes/' + profile.resume_path) }}"
+                           target="_blank" class="btn btn-outline-secondary btn-sm">View Current Resume</a>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif role == 'employer' %}
+            <div class="col-md-6">
+                <label class="form-label">Company Name</label>
+                <input type="text" name="company_name" class="form-control" value="{{ profile.company_name }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Website</label>
+                <input type="url" name="website" class="form-control" value="{{ profile.website }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Company Description</label>
+                <textarea name="company_description" class="form-control">{{ profile.company_description }}</textarea>
+            </div>
+        {% endif %}
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <a href="{{ url_for('profile') }}" class="btn btn-secondary ms-2">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
