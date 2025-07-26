@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Apply for Internship{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <h3 class="mb-4 text-center">Apply to: <span class="text-primary">{{ internship[2] }}</span></h3>
+
+    <div class="row">
+        <!-- Company Info Card -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h4 class="card-title">Company : {{ internship[12] }}</h4> <!-- company_name -->
+                <p class="mb-1"><strong>Website:</strong>
+                    <a href="{{ internship[13] }}" target="_blank">{{ internship[13] }}</a>
+                </p>
+                <p><strong>Description:</strong> {{ internship[14] or 'No description available' }}</p>
+            </div>
+        </div>
+
+        <!-- Internship Info -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Internship Details</h5>
+                    <p><strong>Title:</strong> {{ internship[2] }}</p>
+                    <p><strong>Description:</strong> {{ internship[3] }}</p>
+                    <p><strong>Location:</strong> {{ internship[4] }}</p>
+                    <p><strong>Duration:</strong> {{ internship[5] }}</p>
+                    <p><strong>Skills Required:</strong> {{ internship[6] or 'Not specified' }}</p>
+                    <p><strong>Deadline:</strong> {{ internship[7].strftime('%Y-%m-%d') }}</p>
+                    <p><strong>Stipend:</strong> {{ internship[8] or 'Unpaid' }}</p>
+                    <p><strong>Openings:</strong> {{ internship[9] }}</p>
+                    <p><strong>Additional Requirements:</strong> {{ internship[10] or 'None' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Form -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <h5 class="mb-3 text-center">Application</h5>
+                        <div class="mb-2"><strong>Name:</strong> {{ student[0] }}</div>
+                        <div class="mb-2"><strong>Email:</strong> {{ student[1] }}</div>
+                        <div class="mb-2"><strong>University:</strong> {{ student[2] }}</div>
+                        <div class="mb-3"><strong>Course:</strong> {{ student[3] }}</div>
+
+                        <hr>
+                        
+
+                        <div class="mb-3">
+                            <label for="cover_letter" class="form-label">Cover Letter</label>
+                            <textarea name="cover_letter" class="form-control" rows="5" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="resume" class="form-label">Upload Resume (PDF)</label>
+                            {% if existing_resume %}
+                                <div class="mb-2">
+                                    <strong>Current Resume:</strong>
+                                    <a href="{{ url_for('static', filename='uploads/resumes/' + existing_resume) }}"
+                                       target="_blank" class="btn btn-sm btn-outline-secondary ms-2">View</a>
+                                </div>
+                            {% endif %}
+                            <input type="file" name="resume" accept=".pdf" class="form-control">
+                            <small class="text-muted">Uploading a new file will replace the existing one.</small>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Submit Application</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

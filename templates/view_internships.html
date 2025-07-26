@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Browse Internships{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="text-center mb-4">Browse Internships</h2>
+
+    <!-- Filter Form -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="title" class="form-control" placeholder="Title or Skill"
+                   value="{{ filters.title }}">
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="location" class="form-control" placeholder="Location"
+                   value="{{ filters.location }}">
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="duration" class="form-control" placeholder="Duration (e.g., 3 months)"
+                   value="{{ filters.duration }}">
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    {% if internships %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light text-center">
+                <tr>
+                    <th>Title</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Duration</th>
+                    <th>Skills</th>
+                    <th>Stipend</th>
+                    <th>Deadline</th>
+                    <th>Openings</th>
+                    <th>Posted</th>
+                    {% if role == 'student' %}
+                    <th>Action</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in internships %}
+                <tr>
+                    <td>{{ i.title }}</td>
+                    <td>{{ i.company_name }}</td>
+                    <td>{{ i.location }}</td>
+                    <td>{{ i.duration }}</td>
+                    <td>{{ i.skills_required or 'N/A' }}</td>
+                    <td>{{ i.stipend or 'Unpaid' }}</td>
+                    <td>{{ i.deadline.strftime('%Y-%m-%d') if i.deadline else 'N/A' }}</td>
+                    <td>{{ i.number_of_openings }}</td>
+                    <td>{{ i.posted_date.strftime('%Y-%m-%d') if i.posted_date else 'N/A' }}</td>
+                    {% if role == 'student' %}
+                    <td class="text-center">
+                        {% if i.internship_id in applied_ids %}
+                            <a href="{{ url_for('track_applications') }}" class="btn btn-sm btn-outline-info">Track</a>
+                        {% else %}
+                            <a href="{{ url_for('apply_internship', internship_id=i.internship_id) }}"
+                            class="btn btn-sm btn-success">Apply</a>
+                        {% endif %}
+
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        No internships found based on your filters.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

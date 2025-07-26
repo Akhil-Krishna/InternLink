@@ -6,6 +6,9 @@
   <!-- Filter Form -->
   <form method="get" class="row g-3 mb-4">
     <div class="col-md-3">
+      <input type="text" name="uname" class="form-control" placeholder="User Name" value="{{ filters.uname }}">
+    </div>
+    <div class="col-md-3">
       <input type="text" name="fname" class="form-control" placeholder="First Name" value="{{ filters.fname }}">
     </div>
     <div class="col-md-3">
@@ -62,7 +65,7 @@
             </a>
           </td>
           <td>
-            <a href="#" class="btn btn-sm btn-primary">View Profile</a>
+            <a href="{{ url_for('view_user_profile', user_id=user[0]) }}" class="btn btn-sm btn-primary">View Profile</a>
           </td>
         </tr>
         {% endfor %}

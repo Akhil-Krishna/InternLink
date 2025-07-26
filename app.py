@@ -176,6 +176,68 @@ def logout():
     flash("You have been logged out.")
     return redirect(url_for('index'))
 
+# ========== Internship application ==================
+
+
+    # Browsing Internship Function - Admin and Students
+def get_filtered_internships():
+    cursor, db = getCursor()
+    location = request.args.get('location', '')
+    title = request.args.get('title', '')
+    duration = request.args.get('duration', '')
+
+    query = """
+        SELECT i.internship_id, i.company_id, i.title, i.description, i.location,
+               i.duration, i.skills_required, i.deadline, i.stipend,
+               i.number_of_openings, i.additional_req, i.posted_date,
+               e.company_name
+        FROM internship i
+        JOIN employer e ON i.company_id = e.emp_id
+        WHERE 1=1
+    """
+    params = []
+
+    if location:
+        query += " AND i.location LIKE %s"
+        params.append(f"%{location}%")
+    if title:
+        query += " AND (i.title LIKE %s OR i.skills_required LIKE %s)"
+        params.extend([f"%{title}%", f"%{title}%"])
+    if duration:
+        query += " AND i.duration = %s "
+        params.append(duration)
+
+    query += " ORDER BY i.posted_date DESC"
+
+    cursor.execute(query, tuple(params))
+    results = cursor.fetchall()
+
+    internships = []
+    for r in results:
+        internships.append({
+            'internship_id': r[0],
+            'company_id': r[1],
+            'title': r[2],
+            'description': r[3],
+            'location': r[4],
+            'duration': r[5],
+            'skills_required': r[6],
+            'deadline': r[7],
+            'stipend': r[8],
+            'number_of_openings': r[9],
+            'additional_req': r[10],
+            'posted_date': r[11],
+            'company_name': r[12]
+        })
+
+    return internships, {
+        'location': location,
+        'title': title,
+        'duration': duration
+    }
+
+
+
 # ========== STUDENT ROUTES ==========
 
 @app.route('/student')
@@ -183,13 +245,32 @@ def logout():
 def student_dashboard():
     return render_template('student_dashboard.html')
 
+    # Internship Application - Browse Intership - Student
 @app.route('/student/internships')
 @login_required('student')
-def view_internships():
+def student_browse_internships():
     cursor, db = getCursor()
-    cursor.execute("SELECT * FROM internship WHERE status = 'active'")
-    internships = cursor.fetchall()
-    return render_template('view_internships.html', internships=internships)
+
+    internships, filters = get_filtered_internships()
+
+    # Get student ID
+    cursor.execute("SELECT student_id FROM student WHERE user_id = %s", (session['user_id'],))
+    student_row = cursor.fetchone()
+
+    applied_ids = []
+    if student_row:
+        student_id = student_row[0]
+        cursor.execute("SELECT internship_id FROM application WHERE student_id = %s", (student_id,))
+        applied_ids = [row[0] for row in cursor.fetchall()]
+
+    return render_template(
+        'view_internships.html',
+        internships=internships,
+        filters=filters,
+        role='student',
+        applied_ids=applied_ids
+    )
+
 
 @app.route('/student/applications')
 @login_required('student')
@@ -211,45 +292,52 @@ def track_applications():
         FROM application a
         JOIN internship i ON a.internship_id = i.internship_id
         WHERE a.student_id = %s
-        ORDER BY a.applied_date DESC
+        ORDER BY a.application_date DESC
     """, (student_id,))
     applications = cursor.fetchall()
     
     return render_template('track_applications.html', applications=applications)
 
+
+
+    #Internship Application - Apply Internship
 @app.route('/student/apply/<int:internship_id>', methods=['GET', 'POST'])
 @login_required('student')
 def apply_internship(internship_id):
     cursor, db = getCursor()
 
-    # Get internship details
-    cursor.execute("SELECT * FROM internship WHERE internship_id=%s", (internship_id,))
+    # Fetch internship
+    # Get internship details along with employer info
+    cursor.execute("""
+        SELECT i.*, e.company_name, e.website, e.company_description
+        FROM internship i
+        JOIN employer e ON i.company_id = e.emp_id
+        WHERE i.internship_id = %s
+    """, (internship_id,))
     internship = cursor.fetchone()
-    
     if not internship:
         flash("Internship not found.")
-        return redirect(url_for('view_internships'))
+        return redirect(url_for('browse_internships'))
 
-    # Get student ID and details
+    # Fetch student info
     cursor.execute("""
-        SELECT s.student_id, u.full_name, u.email, s.university, s.course
+SELECT s.student_id, u.full_name, u.email, s.university, s.course, s.resume_path
         FROM student s
         JOIN user u ON s.user_id = u.user_id
-        WHERE s.user_id = %s
+        WHERE u.user_id = %s
     """, (session['user_id'],))
     row = cursor.fetchone()
-    
     if not row:
         flash("Student profile not found.")
         return redirect(url_for('student_dashboard'))
-    
-    student_id, full_name, email, university, course = row
+
+    student_id, full_name, email, university, course , existing_resume = row
 
     if request.method == 'POST':
         cover_letter = request.form['cover_letter']
         resume_file = None
 
-        # Handle resume upload
+        # Check for new resume upload
         if 'resume' in request.files:
             resume = request.files['resume']
             if resume and resume.filename and allowed_file(resume.filename, ALLOWED_RESUME_EXTENSIONS):
@@ -260,26 +348,40 @@ def apply_internship(internship_id):
             elif resume and resume.filename:
                 flash("Invalid file type. Only PDF files are allowed for resumes.")
                 return render_template('apply_internship.html', internship=internship,
-                                     student=(full_name, email, university, course))
+                                    student=(full_name, email, university, course),
+                                    existing_resume=existing_resume)
 
-        # Check for duplicate applications
+        # Use existing resume if no new one uploaded
+        if not resume_file:
+            resume_file = existing_resume  # <- THIS FIXES THE ISSUE
+
+        # Check for duplicate application
         cursor.execute("SELECT * FROM application WHERE student_id=%s AND internship_id=%s", (student_id, internship_id))
         if cursor.fetchone():
             flash("You have already applied for this internship.")
             return redirect(url_for('track_applications'))
 
-        cursor.execute("""INSERT INTO application (student_id, internship_id, cover_letter, resume_path, status)
-                          VALUES (%s, %s, %s, %s, 'pending')""",
-                       (student_id, internship_id, cover_letter, resume_file))
+        # Insert application
+        cursor.execute("""
+            INSERT INTO application (student_id, internship_id, cover_letter, resume_path, status)
+            VALUES (%s, %s, %s, %s, 'pending')
+        """, (student_id, internship_id, cover_letter, resume_file))
         db.commit()
 
         flash("Application submitted successfully.")
         return redirect(url_for('track_applications'))
 
-    return render_template('apply_internship.html', internship=internship,
-                           student=(full_name, email, university, course))
 
-# ========== EMPLOYER ROUTES ==========
+    return render_template("apply_internship.html", internship=internship,
+                       student=(full_name, email, university, course),
+                       existing_resume=row[4])
+
+
+
+
+
+
+# ========== EMPLOYER ROUTES ===========================================================
 
 @app.route('/employer')
 @login_required('employer')
@@ -440,34 +542,12 @@ def edit_internship(internship_id):
     
     return render_template('edit_internship.html', internship=internship)
 
-# ========== ADMIN ROUTES ==========
 
-# @app.route('/admin')
-# @login_required('admin')
-# def admin_dashboard():
-#     cursor, db = getCursor()
-    
-#     # Get some statistics
-#     cursor.execute("SELECT COUNT(*) FROM user WHERE role='student'")
-#     student_count = cursor.fetchone()[0]
-    
-#     cursor.execute("SELECT COUNT(*) FROM user WHERE role='employer'")
-#     employer_count = cursor.fetchone()[0]
-    
-#     cursor.execute("SELECT COUNT(*) FROM internship")
-#     internship_count = cursor.fetchone()[0]
-    
-#     cursor.execute("SELECT COUNT(*) FROM application")
-#     application_count = cursor.fetchone()[0]
-    
-#     stats = {
-#         'students': student_count,
-#         'employers': employer_count,
-#         'internships': internship_count,
-#         'applications': application_count
-#     }
-    
-#     return render_template('admin_dashboard.html', stats=stats)
+
+
+
+
+# ========== ADMIN ROUTES ===============================================================================
 
 @app.route('/admin')
 @login_required('admin')
@@ -494,24 +574,35 @@ def admin_dashboard():
                            total_applications=total_applications)
 
 
+    #Internship Application - Browse Internship Admin
+@app.route('/admin/internships')
+@login_required('admin')
+def admin_browse_internships():
+    internships, filters = get_filtered_internships()
+    return render_template('view_internships.html', internships=internships, filters=filters, role='admin')
 
-
+    #User Management - View User
 @app.route('/admin/users', methods=['GET', 'POST'])
 @login_required('admin')
 def manage_users():
     cursor, db = getCursor()
 
     # Get filter values from query parameters
+    uname = request.args.get('uname', '').strip()
     fname = request.args.get('fname', '').strip()
     lname = request.args.get('lname', '').strip()
     role = request.args.get('role', '')
     status = request.args.get('status', '')
 
     # Base query
-    query = "SELECT user_id, username, role, status, first_name,last_name FROM user WHERE role != 'admin'"
+    #query = "SELECT user_id, username, role, status, first_name,last_name FROM user WHERE role != 'admin'"
+    query = "SELECT user_id, username, role, status, first_name,last_name FROM user WHERE 1=1"
     params = []
 
     # Dynamically add filters
+    if uname:
+        query += " AND username LIKE %s"
+        params.append(f"%{uname}%")
     if fname:
         query += " AND first_name LIKE %s"
         params.append(f"%{fname}%")
@@ -531,9 +622,9 @@ def manage_users():
     users = cursor.fetchall()
 
     return render_template('manage_users.html', users=users,
-                           filters={'fname': fname, 'lname': lname, 'role': role, 'status': status})
+                           filters={'uname':uname,'fname': fname, 'lname': lname, 'role': role, 'status': status})
 
-
+    #User Management - Change user status
 @app.route('/admin/users/toggle/<int:user_id>')
 @login_required('admin')
 def toggle_user_status(user_id):
@@ -553,14 +644,64 @@ def toggle_user_status(user_id):
     return redirect(url_for('manage_users'))
 
 
+    # User Management - View user - other's profile
+@app.route('/admin/view_user/<int:user_id>')
+@login_required('admin')
+def view_user_profile(user_id):
+    cursor, db = getCursor()
+
+    # Get user basic info
+    cursor.execute("SELECT role FROM user WHERE user_id = %s", (user_id,))
+    role_row = cursor.fetchone()
+
+    if not role_row:
+        flash("User not found.")
+        return redirect(url_for('manage_users'))
+
+    role = role_row[0]
+
+    # Load full profile using the same method as /profile route
+    cursor.execute("SELECT username, full_name, first_name, last_name, email, profile_image FROM user WHERE user_id = %s", (user_id,))
+    user = cursor.fetchone()
+    profile_data = {
+        "username": user[0],
+        "full_name": user[1],
+        "first_name": user[2],
+        "last_name": user[3],
+        "email": user[4],
+        "profile_image": user[5] if user[5] else "default_profile.png"
+    }
+
+    if role == 'student':
+        cursor.execute("SELECT university, course, resume_path FROM student WHERE user_id = %s", (user_id,))
+        s = cursor.fetchone()
+        profile_data.update({
+            "university": s[0],
+            "course": s[1],
+            "resume_path": s[2]
+        })
+    elif role == 'employer':
+        cursor.execute("SELECT company_name, website, company_description, logo_path FROM employer WHERE user_id = %s", (user_id,))
+        e = cursor.fetchone()
+        profile_data.update({
+            "company_name": e[0],
+            "website": e[1],
+            "company_description": e[2],
+            "logo_path": e[3]
+        })
+
+    return render_template("profile.html", profile=profile_data, role=role ,  readonly=True)
 
 
-# ============= Profile management ======
+
+# ============= Profile management =========================================================
 def get_user_profile(user_id, role):
     cursor, db = getCursor()
 
-    # Start with base user info
-    cursor.execute("SELECT username, email, full_name, first_name, last_name, profile_image FROM user WHERE user_id = %s", (user_id,))
+    cursor.execute("""
+        SELECT username, email, full_name, first_name, last_name, profile_image
+        FROM user WHERE user_id = %s
+    """, (user_id,))
     user = cursor.fetchone()
 
     if not user:
@@ -572,11 +713,14 @@ def get_user_profile(user_id, role):
         'full_name': user[2],
         'first_name': user[3],
         'last_name': user[4],
-        'profile_image': user[5],
+        'profile_image': user[5] if user[5] else "default_profile.png"
     }
 
     if role == 'student':
-        cursor.execute("SELECT university, course, resume_path FROM student WHERE user_id = %s", (user_id,))
+        cursor.execute("""
+            SELECT university, course, resume_path
+            FROM student WHERE user_id = %s
+        """, (user_id,))
         student = cursor.fetchone()
         if student:
             profile['university'] = student[0]
@@ -584,14 +728,19 @@ def get_user_profile(user_id, role):
             profile['resume_path'] = student[2]
 
     elif role == 'employer':
-        cursor.execute("SELECT company_name, website, company_description FROM employer WHERE user_id = %s", (user_id,))
+        cursor.execute("""
+            SELECT company_name, company_description, website, logo_path
+            FROM employer WHERE user_id = %s
+        """, (user_id,))
         emp = cursor.fetchone()
         if emp:
             profile['company_name'] = emp[0]
-            profile['website'] = emp[1]
-            profile['company_description'] = emp[2]
+            profile['company_description'] = emp[1]
+            profile['website'] = emp[2]
+            profile['logo_path'] = emp[3]
 
     return profile
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required()  # or use your own role-based decorator
@@ -628,12 +777,13 @@ def profile():
         })
 
     elif role == 'employer':
-        cursor.execute("SELECT company_name, website, company_description FROM employer WHERE user_id = %s", (user_id,))
+        cursor.execute("SELECT company_name, website, company_description,logo_path FROM employer WHERE user_id = %s", (user_id,))
         employer = cursor.fetchone()
         profile_data.update({
             "company_name": employer[0],
             "website": employer[1],
-            "company_description": employer[2]
+            "company_description": employer[2],
+            "logo_path":employer[3]
         })
 
     if request.method == 'POST':
@@ -683,7 +833,6 @@ def profile():
     return render_template('profile.html', profile=profile_data, role=role)
 
 
-
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required()
 def edit_profile():
@@ -695,32 +844,64 @@ def edit_profile():
         # Common fields
         first_name = request.form['first_name']
         last_name = request.form['last_name']
-        full_name = first_name + " " + last_name
+        full_name = f"{first_name} {last_name}"
+        email = request.form.get('email')  # editable for admin only
+        remove_pic = request.form.get('remove_pic')  # checkbox
 
-        # Handle new profile pic (optional)
+        # Update name
+        cursor.execute("""
+            UPDATE user SET first_name=%s, last_name=%s, full_name=%s
+            WHERE user_id=%s
+        """, (first_name, last_name, full_name, user_id))
+
+        # If admin, update email
+        if role == 'admin' and email:
+            cursor.execute("UPDATE user SET email=%s WHERE user_id=%s", (email, user_id))
+
+        # Handle profile picture
         profile_pic = request.files.get('profile_pic')
-        if profile_pic and profile_pic.filename != "":
+        if remove_pic:
+            cursor.execute("UPDATE user SET profile_image=NULL WHERE user_id=%s", (user_id,))
+        elif profile_pic and profile_pic.filename:
             if allowed_file(profile_pic.filename, ALLOWED_IMAGE_EXTENSIONS):
-                profile_filename = secure_filename(session['username'] + "_pic_" + profile_pic.filename)
-                profile_pic.save(os.path.join(app.config['PROFILE_IMAGE_UPLOADS'], profile_filename))
-                cursor.execute("UPDATE user SET profile_image=%s WHERE user_id=%s", (profile_filename, user_id))
+                filename = secure_filename(session['username'] + "_pic_" + profile_pic.filename)
+                profile_pic.save(os.path.join(app.config['PROFILE_IMAGE_UPLOADS'], filename))
+                cursor.execute("UPDATE user SET profile_image=%s WHERE user_id=%s", (filename, user_id))
             else:
                 flash("Invalid profile picture format.")
                 return redirect(url_for('edit_profile'))
 
-        # Update basic user info
-        cursor.execute("""
-            UPDATE user SET first_name=%s, last_name=%s, full_name=%s WHERE user_id=%s
-        """, (first_name, last_name, full_name, user_id))
+        # Password change
+        new_pw = request.form.get('new_password')
+        confirm_pw = request.form.get('confirm_password')
+        if new_pw:
+            if len(new_pw) < 8:
+                flash("Password must be atleast 8 characters long.")
+                return redirect(url_for('edit_profile'))
+            elif new_pw.isalpha():
+                flash("Password must include both letters and numbers.")
+                return redirect(url_for('edit_profile'))
+            elif new_pw.isnumeric():
+                flash("Password must include both letters and numbers.")
+                return redirect(url_for('edit_profile'))
+                
+            if new_pw != confirm_pw:
+                flash("Passwords do not match.")
+                return redirect(url_for('edit_profile'))
+            hashed_pw = bcrypt.generate_password_hash(new_pw).decode('utf-8')
+            cursor.execute("UPDATE user SET password_hash=%s WHERE user_id=%s", (hashed_pw, user_id))
 
-        # Role-specific fields
+        # Role-specific updates
         if role == 'student':
             university = request.form['university']
             course = request.form['course']
-
-            # Handle new resume (optional)
             resume = request.files.get('resume')
-            if resume and resume.filename != "":
+
+            cursor.execute("""
+                UPDATE student SET university=%s, course=%s WHERE user_id=%s
+            """, (university, course, user_id))
+
+            if resume and resume.filename:
                 if allowed_file(resume.filename, ALLOWED_RESUME_EXTENSIONS):
                     resume_filename = secure_filename(session['username'] + "_resume_" + resume.filename)
                     resume.save(os.path.join(app.config['RESUME_UPLOADS'], resume_filename))
@@ -729,25 +910,30 @@ def edit_profile():
                     flash("Invalid resume format.")
                     return redirect(url_for('edit_profile'))
 
-            # Update other student info
-            cursor.execute("""
-                UPDATE student SET university=%s, course=%s WHERE user_id=%s
-            """, (university, course, user_id))
-
         elif role == 'employer':
             company_name = request.form['company_name']
+            description = request.form['company_description']
             website = request.form['website']
-            company_description = request.form['company_description']
+            logo = request.files.get('logo')
 
             cursor.execute("""
-                UPDATE employer SET company_name=%s, website=%s, company_description=%s WHERE user_id=%s
-            """, (company_name, website, company_description, user_id))
+                UPDATE employer SET company_name=%s, company_description=%s, website=%s WHERE user_id=%s
+            """, (company_name, description, website, user_id))
+
+            if logo and logo.filename:
+                if allowed_file(logo.filename, ALLOWED_IMAGE_EXTENSIONS):
+                    logo_filename = secure_filename(session['username'] + "_logo_" + logo.filename)
+                    logo.save(os.path.join(app.config['PROFILE_IMAGE_UPLOADS'], logo_filename))
+                    cursor.execute("UPDATE employer SET logo_path=%s WHERE user_id=%s", (logo_filename, user_id))
+                else:
+                    flash("Invalid logo format.")
+                    return redirect(url_for('edit_profile'))
 
         db.commit()
         flash("Profile updated successfully.")
         return redirect(url_for('profile'))
 
-    # GET: Show current profile info
+    # GET method
     profile = get_user_profile(user_id, role)
     return render_template("edit_profile.html", profile=profile, role=role)
 
