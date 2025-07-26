@@ -268,36 +268,117 @@ def student_browse_internships():
         internships=internships,
         filters=filters,
         role='student',
-        applied_ids=applied_ids
+        applied_ids=applied_ids,
+        student_id=student_id
     )
 
-
+    #Internship Application - Student - View list of application of that student
 @app.route('/student/applications')
 @login_required('student')
 def track_applications():
     cursor, db = getCursor()
-    
-    # Get student ID
+
+    # Get student_id
     cursor.execute("SELECT student_id FROM student WHERE user_id = %s", (session['user_id'],))
-    student_row = cursor.fetchone()
-    
-    if not student_row:
+    row = cursor.fetchone()
+    if not row:
         flash("Student profile not found.")
         return redirect(url_for('student_dashboard'))
-    
-    student_id = student_row[0]
-    
+    student_id = row[0]
+
+    # Fetch enriched application data
     cursor.execute("""
-        SELECT a.*, i.title, i.company_name, i.location
-        FROM application a
-        JOIN internship i ON a.internship_id = i.internship_id
-        WHERE a.student_id = %s
-        ORDER BY a.application_date DESC
-    """, (student_id,))
+    SELECT 
+        i.title, e.company_name, i.location,
+        a.status, a.feedback, a.cover_letter, a.resume_path,
+        a.application_date, e.website, e.company_description ,i.internship_id,a.student_id
+    FROM application a
+    JOIN internship i ON a.internship_id = i.internship_id
+    JOIN employer e ON i.company_id = e.emp_id
+    WHERE a.student_id = %s
+    ORDER BY a.application_date DESC
+""", (student_id,))
     applications = cursor.fetchall()
-    
+
     return render_template('track_applications.html', applications=applications)
 
+@app.route('/application/<int:student_id>/<int:internship_id>')
+@login_required()
+def view_application_details(student_id, internship_id):
+    cursor, db = getCursor()
+    role = session['role']
+    user_id = session['user_id']
+
+    # If student, validate ownership
+    if role == 'student':
+        cursor.execute("SELECT student_id FROM student WHERE user_id = %s", (user_id,))
+        own_student = cursor.fetchone()
+        if not own_student or own_student[0] != student_id:
+            flash("Unauthorized access.")
+            return redirect(url_for('student_dashboard'))
+
+    # Fetch full application details
+    cursor.execute("""
+        SELECT 
+            i.title, i.description, i.location, i.duration,
+            i.skills_required, i.stipend, i.deadline, i.posted_date,
+            e.company_name, e.website, e.company_description,
+            a.status, a.feedback, a.cover_letter, a.resume_path, a.application_date,
+            s.user_id, e.user_id
+        FROM application a
+        JOIN internship i ON a.internship_id = i.internship_id
+        JOIN employer e ON i.company_id = e.emp_id
+        JOIN student s ON a.student_id = s.student_id
+        WHERE a.student_id = %s AND a.internship_id = %s
+    """, (student_id, internship_id))
+
+    row = cursor.fetchone()
+    if not row:
+        flash("Application not found.")
+        return redirect(url_for('student_dashboard' if role == 'student' else 'admin_dashboard'))
+
+    # Extract basic details
+    (
+        title, description, location, duration, skills_required, stipend, deadline, posted_date,
+        company_name, website, company_description, status, feedback, cover_letter, resume_path,
+        application_date, student_user_id, employer_user_id
+    ) = row
+
+    application = {
+        "student_id": student_id,
+        "internship_id": internship_id,
+        "title": title,
+        "description": description,
+        "location": location,
+        "duration": duration,
+        "skills_required": skills_required,
+        "stipend": stipend,
+        "deadline": deadline,
+        "posted_date": posted_date,
+        "company_name": company_name,
+        "website": website,
+        "company_description": company_description,
+        "status": status,
+        "feedback": feedback,
+        "cover_letter": cover_letter,
+        "resume_path": resume_path,
+        "application_date": application_date,
+        "viewer_role": role
+    }
+
+    # If admin, fetch student + employer user info
+    if role == 'admin':
+        cursor.execute("SELECT full_name, username FROM user WHERE user_id = %s", (student_user_id,))
+        student_user = cursor.fetchone()
+        cursor.execute("SELECT full_name, username FROM user WHERE user_id = %s", (employer_user_id,))
+        employer_user = cursor.fetchone()
+
+        application["student_full_name"] = student_user[0] if student_user else "N/A"
+        application["student_username"] = student_user[1] if student_user else "N/A"
+        application["employer_full_name"] = employer_user[0] if employer_user else "N/A"
+        application["employer_username"] = employer_user[1] if employer_user else "N/A"
+
+    return render_template("application_details.html", application=application)
 
 
     #Internship Application - Apply Internship
@@ -309,7 +390,7 @@ def apply_internship(internship_id):
     # Fetch internship
     # Get internship details along with employer info
     cursor.execute("""
-        SELECT i.*, e.company_name, e.website, e.company_description
+        SELECT i.*, e.company_name, e.website, e.company_description,e.logo_path
         FROM internship i
         JOIN employer e ON i.company_id = e.emp_id
         WHERE i.internship_id = %s
@@ -623,6 +704,27 @@ def manage_users():
 
     return render_template('manage_users.html', users=users,
                            filters={'uname':uname,'fname': fname, 'lname': lname, 'role': role, 'status': status})
+
+    # Internship Application - Admin - View Status
+@app.route('/admin/applications')
+@login_required('admin')
+def view_all_applications():
+    cursor, db = getCursor()
+
+    cursor.execute("""
+        SELECT a.student_id, a.internship_id, a.status, a.application_date,
+               u.full_name, u.email, i.title, i.location
+        FROM application a
+        JOIN student s ON a.student_id = s.student_id
+        JOIN user u ON s.user_id = u.user_id
+        JOIN internship i ON a.internship_id = i.internship_id
+        ORDER BY a.application_date DESC
+    """)
+    applications = cursor.fetchall()
+
+    return render_template("admin_applications.html", applications=applications)
+
+
 
     #User Management - Change user status
 @app.route('/admin/users/toggle/<int:user_id>')

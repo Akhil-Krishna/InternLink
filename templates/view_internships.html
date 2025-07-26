@@ -57,7 +57,7 @@
                     {% if role == 'student' %}
                     <td class="text-center">
                         {% if i.internship_id in applied_ids %}
-                            <a href="{{ url_for('track_applications') }}" class="btn btn-sm btn-outline-info">Track</a>
+                            <a href="{{ url_for('view_application_details', student_id=student_id,internship_id=i.internship_id) }}" class="btn btn-sm btn-outline-info">Track</a>
                         {% else %}
                             <a href="{{ url_for('apply_internship', internship_id=i.internship_id) }}"
                             class="btn btn-sm btn-success">Apply</a>

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="mb-3 text-center">Application for {{ application.title }}</h3>
+
+    <div class="row g-3">
+        {% if application.viewer_role == 'admin' %}
+            <div class="card mb-3">
+                <div class="card-body">
+                <h5 class="card-title">Student Info</h5>
+                <p><strong>Full Name:</strong> {{ application.student_full_name }}</p>
+                <p><strong>Username:</strong> {{ application.student_username }}</p>
+                <hr>
+                <h5 class="card-title">Employer Info</h5>
+                <p><strong>Full Name:</strong> {{ application.employer_full_name }}</p>
+                <p><strong>Username:</strong> {{ application.employer_username }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+        <!-- Application Info -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h5>Application Status</h5>
+            <p><strong>Status:</strong> 
+               <span class="badge 
+                   {% if application.status == 'Accepted' %}bg-success
+                   {% elif application.status == 'Rejected' %}bg-danger
+                   {% else %}bg-secondary{% endif %}">
+                {{ application.status }}</span>
+            </p>
+
+            {% if application.feedback %}
+            <p><strong>Feedback(Reason):</strong> {{ application.feedback }}</p>
+            {% endif %}
+
+            <p><strong>Cover Letter:</strong><br>{{ application.cover_letter }}</p>
+
+            {% if application.resume_path %}
+            <p><strong>Resume:</strong> 
+                <a href="{{ url_for('static', filename='uploads/resumes/' + application.resume_path) }}" 
+                   class="btn btn-sm btn-outline-primary" target="_blank">View Resume</a>
+            </p>
+            {% endif %}
+
+            <p><strong>Applied on:</strong> {{ application.application_date.strftime('%Y-%m-%d') }}</p>
+        </div>
+    </div>
+        <!-- Internship Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Internship Details</h5>
+                    <p><strong>Title:</strong> {{ application.title }}</p>
+                    <p><strong>Description:</strong> {{ application.description }}</p>
+                    <p><strong>Location:</strong> {{ application.location }}</p>
+                    <p><strong>Duration:</strong> {{ application.duration }}</p>
+                    <p><strong>Skills:</strong> {{ application.skills_required or 'N/A' }}</p>
+                    <p><strong>Stipend:</strong> {{ application.stipend or 'Unpaid' }}</p>
+                    <p><strong>Deadline:</strong> {{ application.deadline.strftime('%Y-%m-%d') }}</p>
+                    <p><strong>Posted on:</strong> {{ application.posted_date.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Info -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Company Info</h5>
+                    <p><strong>Name:</strong> {{ application.company_name }}</p>
+                    <p><strong>Website:</strong> 
+                        <a href="{{ application.website }}" target="_blank">
+                            {{ application.website }}
+                        </a>
+                    </p>
+                    <p><strong>Description:</strong> {{ application.company_description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+{% endblock %}

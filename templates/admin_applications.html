@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4 text-center">All Internship Applications</h2>
+
+    {% if applications %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-light text-center">
+                <tr>
+                    <th>Student</th>
+                    <th>Email</th>
+                    <th>Internship Title</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Applied On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td>{{ app[4] }}</td>
+                    <td>{{ app[5] }}</td>
+                    <td>{{ app[6] }}</td>
+                    <td>{{ app[7] }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if app[2] == 'Accepted' %}bg-success
+                            {% elif app[2] == 'Rejected' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ app[2] }}
+                        </span>
+                    </td>
+                    <td>{{ app[3].strftime('%Y-%m-%d') }}</td>
+                    <td class="text-center">
+                        <a href="{{ url_for('view_application_details', student_id=app[0], internship_id=app[1]) }}"
+                           class="btn btn-sm btn-outline-info">Full Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">No applications found.</div>
+    {% endif %}
+</div>
+{% endblock %}
