@@ -37,6 +37,8 @@
           <th>Duration</th>
           <th>Openings</th>
           <th>Stipend</th>
+          <th>Status</th>
+          <th>Deadline Status</th>
           <th>Applications</th>
         </tr>
       </thead>
@@ -49,6 +51,21 @@
           <td>{{ i[5] }}</td>
           <td>{{ i[9] }}</td>
           <td>{{ i[8] or 'Unpaid' }}</td>
+          
+          <td class="text-center">
+            {% set status = 'Open' if i[9] > 0 else 'Filled' %}
+            <span class="badge {{ 'bg-success' if status == 'Open' else 'bg-secondary' }}">
+              {{ status }}
+            </span>
+          </td>
+
+          <td class="text-center">
+            {% set expired = i[7] and i[7] < now().date() %}
+            <span class="badge {{ 'bg-danger' if expired else 'bg-success' }}">
+              {{ 'Expired' if expired else 'Active' }}
+            </span>
+          </td>
+
           <td class="text-center">
             <a href="{{ url_for('view_applicants', internship_id=i[0]) }}"
                class="btn btn-sm btn-info">View</a>

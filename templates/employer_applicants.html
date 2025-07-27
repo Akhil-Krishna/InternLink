@@ -1,36 +1,116 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Applicants for Internship ID {{ internship_id }}</h2>
+<div class="container py-4">
+  <h2 class="mb-4 text-center">Applicants for Internship: {{ internship[2] }}</h2>
 
-<table class="table table-bordered">
-  <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Cover Letter</th><th>Resume</th><th>Action</th></tr></thead>
-  <tbody>
-    {% for a in applicants %}
-    <tr>
-      <td>{{ a[1] }}</td>
-      <td>{{ a[2] }}</td>
-      <td>{{ a[5] }}</td>
-      <td>{{ a[7] }}</td>
-      <td>
-        {% if a[6] %}
-          <a href="{{ url_for('static', filename='uploads/resumes/' ~ a[6]) }}" target="_blank">View Resume</a>
-        {% else %}
-          N/A
-        {% endif %}
-      </td>
-      <td>
-        <form method="POST" action="{{ url_for('update_application_status', internship_id=internship_id, student_id=a[0]) }}">
-          <select name="status" class="form-select form-select-sm mb-1">
-            <option value="Pending" {% if a[5] == 'Pending' %}selected{% endif %}>Pending</option>
-            <option value="Accepted" {% if a[5] == 'Accepted' %}selected{% endif %}>Accept</option>
-            <option value="Rejected" {% if a[5] == 'Rejected' %}selected{% endif %}>Reject</option>
-          </select>
-          <input type="text" name="feedback" placeholder="Optional feedback" class="form-control form-control-sm mb-1" value="{{ a[6] }}">
-          <button class="btn btn-sm btn-primary">Update</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+  <!-- Search Filters (by full name and status) -->
+  <form method="get" class="row g-3 mb-3">
+    <div class="col-md-5">
+      <input type="text" name="name" class="form-control" placeholder="Search by Name" value="{{ request.args.name }}">
+    </div>
+    <div class="col-md-4">
+      <select name="status" class="form-select">
+        <option value="">All Statuses</option>
+        <option value="Pending" {% if request.args.status == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="Accepted" {% if request.args.status == 'Accepted' %}selected{% endif %}>Accepted</option>
+        <option value="Rejected" {% if request.args.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-grid">
+      <button class="btn btn-primary">Filter</button>
+    </div>
+  </form>
+
+  {% if applicants %}
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Cover Letter</th>
+          <th>Resume</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in applicants %}
+        <tr>
+          <td>{{ a[1] }}</td>
+          <td>{{ a[2] }}</td>
+          <td>
+            <span class="badge {% if a[5] == 'Accepted' %}bg-success{% elif a[5] == 'Rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+              {{ a[5] }}
+            </span>
+          </td>
+          <td>
+            <button type="button" class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#coverModal{{ loop.index }}">
+              View
+            </button>
+          </td>
+          <td>
+            {% if a[8] %}
+              <a href="{{ url_for('static', filename='uploads/resumes/' + a[8]) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a>
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('update_application_status', internship_id=internship[0], student_id=a[0]) }}">
+              <select name="status" class="form-select form-select-sm mb-1">
+                <option value="Pending" {% if a[5] == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Accepted" {% if a[5] == 'Accepted' %}selected{% endif %}>Accept</option>
+                <option value="Rejected" {% if a[5] == 'Rejected' %}selected{% endif %}>Reject</option>
+              </select>
+              <!-- Button to open modal -->
+              <button type="button" class="btn btn-sm btn-outline-primary mb-1" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ loop.index }}">
+                Feedback
+              </button>
+              <button type="submit" class="btn btn-sm btn-success">Update</button>
+
+              <!-- Feedback Modal -->
+              <div class="modal fade" id="feedbackModal{{ loop.index }}" tabindex="-1" aria-labelledby="feedbackModalLabel{{ loop.index }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="feedbackModalLabel{{ loop.index }}">Feedback for {{ a[1] }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <textarea name="feedback" class="form-control" rows="5" placeholder="Enter feedback (optional)">{{ a[6] or '' }}</textarea>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Save Feedback</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cover Letter Modal -->
+              <div class="modal fade" id="coverModal{{ loop.index }}" tabindex="-1" aria-labelledby="coverModalLabel{{ loop.index }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="coverModalLabel{{ loop.index }}">Cover Letter - {{ a[1] }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <pre class="white-space-pre-line">{{ a[7] }}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center">No applicants found.</div>
+  {% endif %}
+</div>
 {% endblock %}

@@ -4,8 +4,11 @@ from werkzeug.utils import secure_filename
 import os
 from connect import getCursor
 from functools import wraps
+from datetime import datetime
+
 
 app = Flask(__name__)
+app.jinja_env.globals.update(now=datetime.now)
 app.secret_key = 'internlink_secure_key'  # Change this in production
 
 # Configure upload folders
@@ -193,7 +196,8 @@ def get_filtered_internships():
                e.company_name
         FROM internship i
         JOIN employer e ON i.company_id = e.emp_id
-        WHERE 1=1 
+        WHERE 1=1 AND i.number_of_openings > 0
+AND i.deadline >= CURDATE()
     """
     params = []
 
@@ -502,7 +506,14 @@ def employer_dashboard():
     query += " ORDER BY posted_date DESC"
 
     cursor.execute(query, tuple(params))
-    internships = cursor.fetchall()
+    rows = cursor.fetchall()
+
+    # Add "status" field based on openings
+    internships = []
+    for i in rows:
+        internship = list(i)
+        internship.append("Open" if i[9] > 0 else "Filled")  # i[9] = number_of_openings
+        internships.append(internship)
 
     filters = {
         'title': title,
@@ -512,7 +523,6 @@ def employer_dashboard():
     }
 
     return render_template('employer_dashboard.html', internships=internships, filters=filters)
-
 @app.route('/employer/applicants/<int:internship_id>')
 @login_required('employer')
 def view_applicants(internship_id):
@@ -526,30 +536,44 @@ def view_applicants(internship_id):
         return redirect(url_for('employer_dashboard'))
     
     emp_id = emp_row[0]
-    
     cursor.execute("SELECT * FROM internship WHERE internship_id = %s AND company_id = %s", (internship_id, emp_id))
     internship = cursor.fetchone()
     if not internship:
         flash("Internship not found or unauthorized access.")
         return redirect(url_for('employer_dashboard'))
 
-    # Get student applications for the internship
-    cursor.execute("""
+    # Filters
+    name_filter = request.args.get('name', '').strip()
+    status_filter = request.args.get('status', '').strip()
+
+    query = """
         SELECT a.student_id, u.full_name, u.email, s.university, s.course, 
                a.status, a.feedback, a.cover_letter, a.resume_path, a.application_date
         FROM application a
         JOIN student s ON a.student_id = s.student_id
         JOIN user u ON s.user_id = u.user_id
         WHERE a.internship_id = %s
-        ORDER BY a.application_date DESC
-    """, (internship_id,))
+    """
+    params = [internship_id]
+
+    if name_filter:
+        query += " AND u.full_name LIKE %s"
+        params.append(f"%{name_filter}%")
+    if status_filter:
+        query += " AND a.status = %s"
+        params.append(status_filter)
+
+    query += " ORDER BY a.application_date DESC"
+
+    cursor.execute(query, tuple(params))
     applicants = cursor.fetchall()
 
-    return render_template('employer_applicants.html', applicants=applicants, 
-                         internship_id=internship_id, internship=internship)
+    return render_template('employer_applicants.html',
+                           applicants=applicants,
+                           internship_id=internship_id,
+                           internship=internship,
+                           filters={'name': name_filter, 'status': status_filter})
 
-
-    # Manage Internship - Admin and Employer
 @app.route('/application/update/<int:internship_id>/<int:student_id>', methods=['POST'])
 @login_required()
 def update_application_status(internship_id, student_id):
@@ -575,22 +599,59 @@ def update_application_status(internship_id, student_id):
         flash("Unauthorized access.")
         return redirect(url_for('index'))
 
-    # Admins reach here with full access
+    # Admin or valid employer proceeds
     new_status = request.form['status']
     feedback = request.form.get('feedback', '')
 
+    # Get old status
+    cursor.execute("""
+        SELECT status FROM application 
+        WHERE student_id = %s AND internship_id = %s
+    """, (student_id, internship_id))
+    row = cursor.fetchone()
+
+    if not row:
+        flash("Application not found.")
+        return redirect(url_for('view_all_applications') if role == 'admin' else url_for('employer_dashboard'))
+
+    old_status = row[0]
+
+    # Update application status and feedback
     cursor.execute("""
         UPDATE application 
-        SET status=%s, feedback=%s 
-        WHERE student_id=%s AND internship_id=%s
+        SET status = %s, feedback = %s 
+        WHERE student_id = %s AND internship_id = %s
     """, (new_status, feedback, student_id, internship_id))
-    db.commit()
 
+    # Manage internship openings
+    if old_status != 'Accepted' and new_status == 'Accepted':
+        # Try to decrease only if there's an opening
+        cursor.execute("""
+            UPDATE internship 
+            SET number_of_openings = number_of_openings - 1 
+            WHERE internship_id = %s AND number_of_openings > 0
+        """, (internship_id,))
+        if cursor.rowcount == 0:
+            db.rollback()
+            flash("Cannot accept: No openings left for this internship.")
+            return redirect(url_for('view_all_applications') if role == 'admin' else url_for('view_applicants', internship_id=internship_id))
+
+    elif old_status == 'Accepted' and new_status != 'Accepted':
+        # Rejected an accepted app → increase opening
+        cursor.execute("""
+            UPDATE internship 
+            SET number_of_openings = number_of_openings + 1 
+            WHERE internship_id = %s
+        """, (internship_id,))
+
+    db.commit()
     flash("Application status updated successfully.")
+
     if role == 'employer':
         return redirect(url_for('view_applicants', internship_id=internship_id))
     else:
         return redirect(url_for('view_all_applications'))
+
 
 
 # Add and Edit Internship Now not needed
