@@ -1,22 +1,29 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="container py-4">
     <h2 class="mb-4 text-center">All Internship Applications</h2>
     
-    <form method="get" class="mb-3 d-flex gap-2">
-        <input type="text" name="student_name" placeholder="Student Name" value="{{ filters.student_name }}">
-        <input type="text" name="title" placeholder="Internship Title" value="{{ filters.title }}">
-        <select name="status">
-            <option value="">All Statuses</option>
-            <option value="pending" {% if filters.status == 'pending' %}selected{% endif %}>Pending</option>
-            <option value="accepted" {% if filters.status == 'accepted' %}selected{% endif %}>Accepted</option>
-            <option value="rejected" {% if filters.status == 'rejected' %}selected{% endif %}>Rejected</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Search</button>
+    <!-- Search Filters -->
+    <form method="get" class="row g-3 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="student_name" placeholder="Student Name" class="form-control" value="{{ filters.student_name }}">
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="title" placeholder="Internship Title" class="form-control" value="{{ filters.title }}">
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="pending" {% if filters.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="accepted" {% if filters.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                <option value="rejected" {% if filters.status == 'rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+        </div>
+        <div class="col-md-1 d-grid">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
     </form>
 
-    
     {% if applications %}
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">
@@ -29,7 +36,7 @@
                     <th>Status</th>
                     <th>Applied On</th>
                     <th>Action</th>
-                    <th>Change Status</th>
+                    <th>Update</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,17 +59,47 @@
                         <a href="{{ url_for('view_application_details', student_id=app[0], internship_id=app[1]) }}"
                            class="btn btn-sm btn-outline-info">Full Details</a>
                     </td>
-                    <td>
-                                                <!-- Status update form (visible for admins) -->
-                        <form method="post" action="{{ url_for('update_application_status', internship_id=app[1], student_id=app[0]) }}">
-                            <select name="status" class="form-select form-select-sm d-inline w-auto">
-                                <option value="Pending" {% if app[2] == 'Pending' %}selected{% endif %}>Pending</option>
-                                <option value="Accepted" {% if app[2] == 'Accepted' %}selected{% endif %}>Accepted</option>
-                                <option value="Rejected" {% if app[2] == 'Rejected' %}selected{% endif %}>Rejected</option>
-                            </select>
-                            <input type="text" name="feedback" class="form-control form-control-sm d-inline w-50" placeholder="Feedback (optional)">
-                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
-                        </form>
+                    <td class="text-center">
+                        <!-- Trigger Modal -->
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#updateModal{{ app[0] }}_{{ app[1] }}">
+                            Edit
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="updateModal{{ app[0] }}_{{ app[1] }}" tabindex="-1"
+                             aria-labelledby="modalLabel{{ app[0] }}_{{ app[1] }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form method="post" action="{{ url_for('update_application_status', internship_id=app[1], student_id=app[0]) }}">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalLabel{{ app[0] }}_{{ app[1] }}">Update Application</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="status" class="form-label">Status</label>
+                                                <select name="status" class="form-select">
+                                                    <option value="Pending" {% if app[2] == 'Pending' %}selected{% endif %}>Pending</option>
+                                                    <option value="Accepted" {% if app[2] == 'Accepted' %}selected{% endif %}>Accepted</option>
+                                                    <option value="Rejected" {% if app[2] == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="feedback" class="form-label">Feedback (optional)</label>
+                                                <textarea name="feedback" rows="3" class="form-control"
+                                                          placeholder="Provide reason if accepted or rejected..."></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-success">Update</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
 
                     </td>
                 </tr>

@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import os
 from connect import getCursor
 from functools import wraps
-from datetime import datetime
+from datetime import datetime , date
 
 
 app = Flask(__name__)
@@ -196,8 +196,7 @@ def get_filtered_internships():
                e.company_name
         FROM internship i
         JOIN employer e ON i.company_id = e.emp_id
-        WHERE 1=1 AND i.number_of_openings > 0
-AND i.deadline >= CURDATE()
+        WHERE 1=1
     """
     params = []
 
@@ -241,7 +240,6 @@ AND i.deadline >= CURDATE()
     }
 
 
-
 # ========== STUDENT ROUTES ==========
 
 @app.route('/student')
@@ -273,7 +271,8 @@ def student_browse_internships():
         filters=filters,
         role='student',
         applied_ids=applied_ids,
-        student_id=student_id
+        student_id=student_id,
+        today=date.today()
     )
 
     #Internship Application - Student - View list of application of that student
