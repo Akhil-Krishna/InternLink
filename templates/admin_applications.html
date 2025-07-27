@@ -3,7 +3,20 @@
 {% block content %}
 <div class="container py-4">
     <h2 class="mb-4 text-center">All Internship Applications</h2>
+    
+    <form method="get" class="mb-3 d-flex gap-2">
+        <input type="text" name="student_name" placeholder="Student Name" value="{{ filters.student_name }}">
+        <input type="text" name="title" placeholder="Internship Title" value="{{ filters.title }}">
+        <select name="status">
+            <option value="">All Statuses</option>
+            <option value="pending" {% if filters.status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="accepted" {% if filters.status == 'accepted' %}selected{% endif %}>Accepted</option>
+            <option value="rejected" {% if filters.status == 'rejected' %}selected{% endif %}>Rejected</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
 
+    
     {% if applications %}
     <div class="table-responsive">
         <table class="table table-bordered table-striped align-middle">
@@ -16,6 +29,7 @@
                     <th>Status</th>
                     <th>Applied On</th>
                     <th>Action</th>
+                    <th>Change Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +51,19 @@
                     <td class="text-center">
                         <a href="{{ url_for('view_application_details', student_id=app[0], internship_id=app[1]) }}"
                            class="btn btn-sm btn-outline-info">Full Details</a>
+                    </td>
+                    <td>
+                                                <!-- Status update form (visible for admins) -->
+                        <form method="post" action="{{ url_for('update_application_status', internship_id=app[1], student_id=app[0]) }}">
+                            <select name="status" class="form-select form-select-sm d-inline w-auto">
+                                <option value="Pending" {% if app[2] == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Accepted" {% if app[2] == 'Accepted' %}selected{% endif %}>Accepted</option>
+                                <option value="Rejected" {% if app[2] == 'Rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                            <input type="text" name="feedback" class="form-control form-control-sm d-inline w-50" placeholder="Feedback (optional)">
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+
                     </td>
                 </tr>
                 {% endfor %}

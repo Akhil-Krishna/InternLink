@@ -1,22 +1,65 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>My Posted Internships</h2>
+<div class="container py-4">
+  <h2 class="mb-4">My Posted Internships</h2>
 
-{% if internships %}
-<table class="table table-bordered">
-  <thead><tr><th>Title</th><th>Location</th><th>Deadline</th><th>Applications</th></tr></thead>
-  <tbody>
-    {% for i in internships %}
-    <tr>
-      <td>{{ i[2] }}</td>
-      <td>{{ i[4] }}</td>
-      <td>{{ i[7] }}</td>
-      <td><a href="{{ url_for('view_applicants', internship_id=i[0]) }}" class="btn btn-sm btn-info">View</a></td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No internships posted yet.</p>
-{% endif %}
+  <!-- Filter Form -->
+  <form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+      <input type="text" name="title" class="form-control" placeholder="Title"
+             value="{{ filters.title }}">
+    </div>
+    <div class="col-md-2">
+      <input type="text" name="duration" class="form-control" placeholder="Duration"
+             value="{{ filters.duration }}">
+    </div>
+    <div class="col-md-2">
+      <input type="number" name="openings" class="form-control" placeholder="Openings"
+             value="{{ filters.openings }}">
+    </div>
+    <div class="col-md-2">
+      <input type="text" name="stipend" class="form-control" placeholder="Stipend"
+             value="{{ filters.stipend }}">
+    </div>
+    <div class="col-md-2 d-grid">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  {% if internships %}
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-light text-center">
+        <tr>
+          <th>Title</th>
+          <th>Location</th>
+          <th>Deadline</th>
+          <th>Duration</th>
+          <th>Openings</th>
+          <th>Stipend</th>
+          <th>Applications</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in internships %}
+        <tr>
+          <td>{{ i[2] }}</td>
+          <td>{{ i[4] }}</td>
+          <td>{{ i[7].strftime('%Y-%m-%d') if i[7] else 'N/A' }}</td>
+          <td>{{ i[5] }}</td>
+          <td>{{ i[9] }}</td>
+          <td>{{ i[8] or 'Unpaid' }}</td>
+          <td class="text-center">
+            <a href="{{ url_for('view_applicants', internship_id=i[0]) }}"
+               class="btn btn-sm btn-info">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center">No internships posted yet.</div>
+  {% endif %}
+</div>
 {% endblock %}

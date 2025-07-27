@@ -193,7 +193,7 @@ def get_filtered_internships():
                e.company_name
         FROM internship i
         JOIN employer e ON i.company_id = e.emp_id
-        WHERE 1=1
+        WHERE 1=1 
     """
     params = []
 
@@ -477,43 +477,41 @@ def employer_dashboard():
         return redirect(url_for('index'))
     emp_id = emp_row[0]
 
-    cursor.execute("SELECT * FROM internship WHERE company_id = %s ORDER BY posted_date DESC", (emp_id,))
+    # Get filters from query string
+    title = request.args.get('title', '')
+    duration = request.args.get('duration', '')
+    openings = request.args.get('openings', '')
+    stipend = request.args.get('stipend', '')
+
+    query = "SELECT * FROM internship WHERE company_id = %s"
+    params = [emp_id]
+
+    if title:
+        query += " AND title LIKE %s"
+        params.append(f"%{title}%")
+    if duration:
+        query += " AND duration LIKE %s"
+        params.append(f"%{duration}%")
+    if openings:
+        query += " AND number_of_openings = %s"
+        params.append(openings)
+    if stipend:
+        query += " AND stipend LIKE %s"
+        params.append(f"%{stipend}%")
+
+    query += " ORDER BY posted_date DESC"
+
+    cursor.execute(query, tuple(params))
     internships = cursor.fetchall()
 
-    return render_template('employer_dashboard.html', internships=internships)
+    filters = {
+        'title': title,
+        'duration': duration,
+        'openings': openings,
+        'stipend': stipend
+    }
 
-@app.route('/employer/post', methods=['GET', 'POST'])
-@login_required('employer')
-def post_internship():
-    cursor, db = getCursor()
-    
-    if request.method == 'POST':
-        # Get employer ID
-        cursor.execute("SELECT emp_id FROM employer WHERE user_id = %s", (session['user_id'],))
-        emp_row = cursor.fetchone()
-        if not emp_row:
-            flash("Employer profile not found.")
-            return redirect(url_for('employer_dashboard'))
-        
-        emp_id = emp_row[0]
-        
-        title = request.form['title']
-        description = request.form['description']
-        requirements = request.form['requirements']
-        location = request.form['location']
-        duration = request.form['duration']
-        stipend = request.form.get('stipend', 0)
-        
-        cursor.execute("""
-            INSERT INTO internship (company_id, title, description, requirements, location, duration, stipend, status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, 'active')
-        """, (emp_id, title, description, requirements, location, duration, stipend))
-        db.commit()
-        
-        flash("Internship posted successfully!")
-        return redirect(url_for('employer_dashboard'))
-    
-    return render_template('post_internship.html')
+    return render_template('employer_dashboard.html', internships=internships, filters=filters)
 
 @app.route('/employer/applicants/<int:internship_id>')
 @login_required('employer')
@@ -550,78 +548,126 @@ def view_applicants(internship_id):
     return render_template('employer_applicants.html', applicants=applicants, 
                          internship_id=internship_id, internship=internship)
 
-@app.route('/employer/update/<int:internship_id>/<int:student_id>', methods=['POST'])
-@login_required('employer')
+
+    # Manage Internship - Admin and Employer
+@app.route('/application/update/<int:internship_id>/<int:student_id>', methods=['POST'])
+@login_required()
 def update_application_status(internship_id, student_id):
     cursor, db = getCursor()
-    
-    # Verify internship belongs to current employer
-    cursor.execute("SELECT emp_id FROM employer WHERE user_id = %s", (session['user_id'],))
-    emp_row = cursor.fetchone()
-    if not emp_row:
-        flash("Employer profile not found.")
-        return redirect(url_for('employer_dashboard'))
-    
-    emp_id = emp_row[0]
-    
-    cursor.execute("SELECT * FROM internship WHERE internship_id = %s AND company_id = %s", (internship_id, emp_id))
-    if not cursor.fetchone():
+    role = session['role']
+    user_id = session['user_id']
+
+    # Validate employer owns the internship or is admin
+    if role == 'employer':
+        cursor.execute("SELECT emp_id FROM employer WHERE user_id = %s", (user_id,))
+        emp_row = cursor.fetchone()
+        if not emp_row:
+            flash("Employer profile not found.")
+            return redirect(url_for('employer_dashboard'))
+
+        emp_id = emp_row[0]
+        cursor.execute("SELECT * FROM internship WHERE internship_id = %s AND company_id = %s", (internship_id, emp_id))
+        if not cursor.fetchone():
+            flash("Unauthorized: This internship does not belong to you.")
+            return redirect(url_for('employer_dashboard'))
+
+    elif role != 'admin':
         flash("Unauthorized access.")
-        return redirect(url_for('employer_dashboard'))
-    
+        return redirect(url_for('index'))
+
+    # Admins reach here with full access
     new_status = request.form['status']
     feedback = request.form.get('feedback', '')
 
-    cursor.execute("""UPDATE application 
-                      SET status=%s, feedback=%s 
-                      WHERE student_id=%s AND internship_id=%s""",
-                   (new_status, feedback, student_id, internship_id))
+    cursor.execute("""
+        UPDATE application 
+        SET status=%s, feedback=%s 
+        WHERE student_id=%s AND internship_id=%s
+    """, (new_status, feedback, student_id, internship_id))
     db.commit()
-    
-    flash("Application status updated successfully.")
-    return redirect(url_for('view_applicants', internship_id=internship_id))
 
-@app.route('/employer/edit/<int:internship_id>', methods=['GET', 'POST'])
-@login_required('employer')
-def edit_internship(internship_id):
-    cursor, db = getCursor()
+    flash("Application status updated successfully.")
+    if role == 'employer':
+        return redirect(url_for('view_applicants', internship_id=internship_id))
+    else:
+        return redirect(url_for('view_all_applications'))
+
+
+# Add and Edit Internship Now not needed
+
+# @app.route('/employer/post', methods=['GET', 'POST'])
+# @login_required('employer')
+# def post_internship():
+#     cursor, db = getCursor()
     
-    # Verify internship belongs to current employer
-    cursor.execute("SELECT emp_id FROM employer WHERE user_id = %s", (session['user_id'],))
-    emp_row = cursor.fetchone()
-    if not emp_row:
-        flash("Employer profile not found.")
-        return redirect(url_for('employer_dashboard'))
-    
-    emp_id = emp_row[0]
-    
-    cursor.execute("SELECT * FROM internship WHERE internship_id = %s AND company_id = %s", (internship_id, emp_id))
-    internship = cursor.fetchone()
-    if not internship:
-        flash("Internship not found or unauthorized access.")
-        return redirect(url_for('employer_dashboard'))
-    
-    if request.method == 'POST':
-        title = request.form['title']
-        description = request.form['description']
-        requirements = request.form['requirements']
-        location = request.form['location']
-        duration = request.form['duration']
-        stipend = request.form.get('stipend', 0)
-        status = request.form['status']
+#     if request.method == 'POST':
+#         # Get employer ID
+#         cursor.execute("SELECT emp_id FROM employer WHERE user_id = %s", (session['user_id'],))
+#         emp_row = cursor.fetchone()
+#         if not emp_row:
+#             flash("Employer profile not found.")
+#             return redirect(url_for('employer_dashboard'))
         
-        cursor.execute("""
-            UPDATE internship 
-            SET title=%s, description=%s, requirements=%s, location=%s, 
-                duration=%s, stipend=%s, status=%s
-            WHERE internship_id=%s
-        """, (title, description, requirements, location, duration, stipend, status, internship_id))
-        db.commit()
+#         emp_id = emp_row[0]
         
-        flash("Internship updated successfully!")
-        return redirect(url_for('employer_dashboard'))
+#         title = request.form['title']
+#         description = request.form['description']
+#         requirements = request.form['requirements']
+#         location = request.form['location']
+#         duration = request.form['duration']
+#         stipend = request.form.get('stipend', 0)
+        
+#         cursor.execute("""
+#             INSERT INTO internship (company_id, title, description, requirements, location, duration, stipend, status)
+#             VALUES (%s, %s, %s, %s, %s, %s, %s, 'active')
+#         """, (emp_id, title, description, requirements, location, duration, stipend))
+#         db.commit()
+        
+#         flash("Internship posted successfully!")
+#         return redirect(url_for('employer_dashboard'))
     
-    return render_template('edit_internship.html', internship=internship)
+#     return render_template('post_internship.html')
+# @app.route('/employer/edit/<int:internship_id>', methods=['GET', 'POST'])
+# @login_required('employer')
+# def edit_internship(internship_id):
+#     cursor, db = getCursor()
+    
+#     # Verify internship belongs to current employer
+#     cursor.execute("SELECT emp_id FROM employer WHERE user_id = %s", (session['user_id'],))
+#     emp_row = cursor.fetchone()
+#     if not emp_row:
+#         flash("Employer profile not found.")
+#         return redirect(url_for('employer_dashboard'))
+    
+#     emp_id = emp_row[0]
+    
+#     cursor.execute("SELECT * FROM internship WHERE internship_id = %s AND company_id = %s", (internship_id, emp_id))
+#     internship = cursor.fetchone()
+#     if not internship:
+#         flash("Internship not found or unauthorized access.")
+#         return redirect(url_for('employer_dashboard'))
+    
+#     if request.method == 'POST':
+#         title = request.form['title']
+#         description = request.form['description']
+#         requirements = request.form['requirements']
+#         location = request.form['location']
+#         duration = request.form['duration']
+#         stipend = request.form.get('stipend', 0)
+#         status = request.form['status']
+        
+#         cursor.execute("""
+#             UPDATE internship 
+#             SET title=%s, description=%s, requirements=%s, location=%s, 
+#                 duration=%s, stipend=%s, status=%s
+#             WHERE internship_id=%s
+#         """, (title, description, requirements, location, duration, stipend, status, internship_id))
+#         db.commit()
+        
+#         flash("Internship updated successfully!")
+#         return redirect(url_for('employer_dashboard'))
+    
+#     return render_template('edit_internship.html', internship=internship)
 
 
 
@@ -706,23 +752,49 @@ def manage_users():
                            filters={'uname':uname,'fname': fname, 'lname': lname, 'role': role, 'status': status})
 
     # Internship Application - Admin - View Status
-@app.route('/admin/applications')
+@app.route('/admin/applications', methods=['GET'])
 @login_required('admin')
 def view_all_applications():
     cursor, db = getCursor()
 
-    cursor.execute("""
+    # Filters
+    student_name = request.args.get('student_name', '').strip()
+    internship_title = request.args.get('title', '').strip()
+    status = request.args.get('status', '').strip()
+
+    query = """
         SELECT a.student_id, a.internship_id, a.status, a.application_date,
                u.full_name, u.email, i.title, i.location
         FROM application a
         JOIN student s ON a.student_id = s.student_id
         JOIN user u ON s.user_id = u.user_id
         JOIN internship i ON a.internship_id = i.internship_id
-        ORDER BY a.application_date DESC
-    """)
+        WHERE 1=1
+    """
+    params = []
+
+    if student_name:
+        query += " AND u.full_name LIKE %s"
+        params.append(f"%{student_name}%")
+    if internship_title:
+        query += " AND i.title LIKE %s"
+        params.append(f"%{internship_title}%")
+    if status:
+        query += " AND a.status = %s"
+        params.append(status)
+
+    query += " ORDER BY a.application_date DESC"
+
+    cursor.execute(query, tuple(params))
     applications = cursor.fetchall()
 
-    return render_template("admin_applications.html", applications=applications)
+    filters = {
+        'student_name': student_name,
+        'title': internship_title,
+        'status': status
+    }
+
+    return render_template("admin_applications.html", applications=applications, filters=filters)
 
 
 

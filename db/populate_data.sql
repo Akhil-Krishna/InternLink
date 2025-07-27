@@ -35,8 +35,8 @@ INSERT INTO user (username, full_name,first_name,last_name, email, password_hash
 
 -- ADMINISTRATORS (2 admins)
 INSERT INTO user (username, full_name,first_name,last_name,email, password_hash, profile_image, role, status) VALUES
-('admin.system', 'Admin System','Admin','System', 'admin@internlink.co.nz', '$2b$12$OKZ8.3wV6geZQZJ5F076MurqrqjVVQ3WhkhcjsBpn3TkaQv9WaNWW', 'admin_system.jpg', 'admin', 'active'),
-('admin.support', 'Admin Support','Admin','Support','support@internlink.co.nz', '$2b$12$E/iuyElJKmVYJt8wusnovuBZqoFn6OzW.wfqZ2jbhJaZ6tELBXi1m', 'admin_support.jpg', 'admin', 'active');
+('admin.system', 'Aravind S','Aravind','S', 'admin@internlink.co.nz', '$2b$12$OKZ8.3wV6geZQZJ5F076MurqrqjVVQ3WhkhcjsBpn3TkaQv9WaNWW', 'admin_system.jpg', 'admin', 'active'),
+('admin.support', 'Angel Thomas','Angel','Thomas','support@internlink.co.nz', '$2b$12$E/iuyElJKmVYJt8wusnovuBZqoFn6OzW.wfqZ2jbhJaZ6tELBXi1m', 'admin_support.jpg', 'admin', 'active');
 -- Insert Student details
 
 
