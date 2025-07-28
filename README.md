@@ -1,169 +1,287 @@
-# Login Example v2.0.3 (24 February 2025)
+# InternLink - Internship Management System
 
-This sample app demonstrates a simple login system that allows users to
-register, log in, and view pages specific to their user role. Those pages don't
-really do anything: it's just a simplified example to share some basic tools
-and techniques you might need when building a real-world login system.
+InternLink is a comprehensive web-based internship management platform designed to bridge the gap between students seeking internship opportunities and employers looking to connect with emerging talent. The system provides role-based access for students, employers, and administrators, each with tailored functionality to streamline the internship application and management process.
 
-There are three user roles in this system:
-- **Customer**
-- **Staff**
-- **Admin**
+## Features Overview
 
-Anyone who registers via the app will be a **Customer**. The only way to create
-**Staff** or **Admin** accounts in this simple app is to insert them directly
-into the database. Hey, we didn't say this app was complete!
+### For Students
+- **Registration & Profile Management**: Create accounts with personal details, university information, and upload resumes
+- **Browse Internships**: Search and filter internship opportunities by location, title, and duration
+- **Application System**: Apply to internships with pre-filled forms and cover letter functionality
+- **Application Tracking**: Monitor application status (Pending, Accepted, Rejected) with employer feedback
 
-## Getting this Example Running
+### For Employers
+- **Dashboard**: View and manage internships posted by their organization
+- **Application Management**: Review student applications with filtering capabilities
+- **Status Updates**: Accept or reject applications with optional feedback
+- **Profile Management**: Update company information and branding
 
-To run the example yourself, you'll need to:
+### For Administrators
+- **User Oversight**: View and manage all users across the platform
+- **System Monitoring**: Track platform statistics and user activity
+- **Application Review**: Monitor all internship applications system-wide
+- **User Status Control**: Activate or deactivate user accounts
 
-1. Open the project in Visual Studio Code.
-2. Create yourself a virtual environment.
-3. Install all of the packages listed in requirements.txt (Visual Studio will
-   offer to do this for you during step 2).
-4. Use the [Database Creation Script](create_database.sql) to create your own
-   copy of the **loginexample** database.
-5. Use the [Database Population Script](populate_database.sql) to populate
-   the **loginexample** ***users*** table with example users.
-6. Modify [connect.py](loginapp/connect.py) with the connection details for
-   your local database server.
-7. Run [The Python/Flask application](run.py).
+## Technology Stack
 
-At that point, you should be able to register yourself a new **customer**
-account or log in using one of the **customer**, **staff**, or **admin**
-accounts listed in the [Database Population Script](populate_database.sql).
+- **Backend**: Python 3.x with Flask framework
+- **Frontend**: HTML5, Bootstrap CSS, JavaScript
+- **Database**: MySQL
+- **Security**: Flask-Bcrypt for password hashing
+- **File Handling**: Werkzeug for secure file uploads
 
-Enjoy!
+## Installation Guide
 
-## Database Scripts
+### Prerequisites
 
-While we're talking about the database, you should take a look at:
-- [MySQL script to create the necessary database](create_database.sql)
-- [MySQL script to populate the database with users](populate_database.sql)
-- [Python script to create password hashes](password_hash_generator.py)
+Before setting up InternLink, ensure you have the following installed:
+- Python 3.7 or higher
+- MySQL Server 8.0 or higher
+- pip (Python package installer)
+- Git
 
-What's that third one? Well, for that we need to talk about...
+### Step 1: Clone the Repository
 
-## Passwords
+```bash
+git clone https://github.com/yourusername/InternLink.git
+cd InternLink
+```
 
-One of the key things about this login system is that it doesn't actually store
-users' passwords in the database. That may lead you to ask...
+### Step 2: Set Up Virtual Environment
 
-### Why not store passwords?
-People tend to re-use passwords across multiple websites, no matter how much
-security experts might tell them not to. That means if someone gets access to
-your database, containing a whole lot of users' passwords and other details
-like names or email addresses, they can use those passwords to compromise
-your users' accounts with other services (like their email, or bank account).
+```bash
+# Create virtual environment
+python -m venv internlink_env
 
-### How do you handle registration and login without storing passwords?
+# Activate virtual environment
+# On Windows:
+internlink_env\Scripts\activate
+# On macOS/Linux:
+source internlink_env/bin/activate
+```
 
-Easy! Well, sort of. It goes like this:
+### Step 3: Install Dependencies
 
-1. When the user first gives us a password during registration, we pass it
-   through a cryptographic "hash" function: a one-way mathematical operation
-   that transforms the original password into its corresponding "hash value"
-   or "hash". The same password always results in the same hash.
-   
-2. We throw away the original password, and just keep the hash.
-   
-3. The hash value is useless to an attacker: because the hash-function is
-   one-way, anyone who steals our database of user accounts can't work out
-   what the users' passwords are. Well, okay, there are clever ways around
-   that. Look up "rainbow tables" if you're interested. Read Cory Doctorow's
-   "Knights of the Rainbow Table" if you're *really* interested. But it takes
-   a whole lot more time and computing power for an attacker to get a user's
-   password back from its hash than it does to just read the plain password
-   straight out of your database.
+```bash
+pip install -r requirements.txt
+```
 
-4. When a user tries to log in, we take the password they supplied us, run it
-   through the exact same hash function, and then compare the hash to the one
-   we have on file. Because the same password will always produce the same
-   hash, if the two hashes match then the passwords must match! Again, kinda.
-   It's possible, though very unlikely, that two passwords may produce the
-   same hash value. In that case, you'd be able to log in using either
-   password. These kinds of "hash collisions" are extremely rare, though. Rare
-   enough that we won't worry about that here.
+### Step 4: Database Setup
 
-So, in short:
-1. The user gives us a password.
-2. We put that password though a one-way hashing algorithm to get its "hash".
-3. We store the hash, **not** the password.
-4. During login, we put the supplied password through the same algorithm.
-5. If the hash of the supplied password matches the hash of the user's original
-   password that we stored in step 3, then we know the user has supplied the
-   correct password... without having to know their password at all.
+1. **Create Database**:
+   - Open MySQL Workbench or command line
+   - Execute the database creation script:
+   ```sql
+   source db/create_database.sql
+   ```
 
-Cool, huh?
+2. **Populate Database**:
+   - Run the population script to add sample data:
+   ```sql
+   source db/populate_database.sql
+   ```
 
-### Salting Passwords
+### Step 5: Configure Database Connection
 
-Remember how we mentioned that it's technically possible for an attacker to
-work out a user's original password from its hash, just expensive? Well, it's
-actually not expensive at all if you just pre-calculate one of those "rainbow
-tables": essentially a giant table mapping hash values back to passwords. It
-takes time to generate something like that, and the tables are absolutely huge,
-but storage is pretty cheap these days and you only have to generate the table
-once per hash algorithm. Once someone has a rainbow table for a particular
-algorithm, translating hashes back to passwords is just a simple lookup.
+1. Create a `connect.py` file in the root directory
+2. Add your database connection details:
 
-The contemporary solution to this is to add a "salt" to each password before
-you hash it. The salt is just some random string. It doesn't have to be secret,
-necessarily, just specific to your app (which we used to do in older versions
-of this example project) or, ideally, specific to each password (which we do in
-this current version). Adding a salt to your passwords totally breaks the whole
-"rainbow table" approach: an attacker can't just use an off-the-shelf table
-any more. With our old approach, one salt for the whole app, an attacker needs
-to generate a rainbow table specific to *our application's salt*. When you're
-using per-password salts, like we are here, an attacker would have to generate
-one of those giant tables to break *each individual password* in our database.
+```python
+import mysql.connector
 
-Quantum computing will probably break all this, in the not-too-distant future,
-but for now this approach provides a reasonable means of protecting users'
-passwords from disclosure if an attacker gains access to our database.
+def getCursor():
+    connection = mysql.connector.connect(
+        host='localhost',
+        user='your_mysql_username',
+        password='your_mysql_password',
+        database='internlink_db',
+        autocommit=True
+    )
+    cursor = connection.cursor()
+    return cursor, connection
+```
 
-### How exactly do we do all this?
+### Step 6: Create Upload Directories
 
-With the [Flask-Bcrypt library](https://flask-bcrypt.readthedocs.io/en/1.0.1/)
-(which is really just a Flask-specific wrapper for the bcrypt library) and a
-couple lines of code.
+The application will automatically create necessary directories, but you can manually create them:
 
-If you take a look at the [database creation script](create_database.sql),
-you'll see that instead of a "password" field to store the password, we have a
-"password_hash" field that stores a binary string of 60 characters.
+```bash
+mkdir -p static/uploads/images
+mkdir -p static/uploads/resumes
+```
 
-Flask-Bcrypt uses the [bcrypt algorithm](https://en.wikipedia.org/wiki/Bcrypt)
-(as you may have guessed from the name). Bcrypt password hashes bundle together
-a bcrypt version number, the password hash itself, and the salt value used to
-generate it. Together, depending on which version of the algorithm you're
-using, this is a string of either 59 or 60 bytes (always 60 bytes in the
-current version).
+### Step 7: Run the Application
 
-The string of bytes making up a bcrypt hash are all in the "printable
-character" range, so can be displayed a text string. In a MySQL database you
-could either store them as a `BINARY(60)` or `CHAR(60) BINARY` column: we use
-the latter format in this example because it makes it easier for us to see and
-edit the hashes in MySQL Workbench. Technically, because of the way our app
-is written, we could use plain old `CHAR(60)`. However, we explicitly use
-`CHAR(60) BINARY` because this tells MySQL to treat our string as binary data:
-where, for example, "ABC" is meaningfully different to "ABc" or "aBC".
+```bash
+python app.py
+```
 
-If this sounds terrifyingly complicated, don't worry. Take a look at the
-[Hash generator Python script](password_hash_generator.py) for an example of
-how to create the hashes (literally one line of code) and check a password
-against a hash (again, one line of code).
+The application will be available at `http://localhost:5000`
 
-If we were using the bcrypt library directly, or another option such as
-[Flask-Hashing](https://flask-hashing.readthedocs.io/en/latest/) (used in older
-versions of this example) then we'd need to handle the "salting" process
-ourselves. However, the Flask-Bcrypt library does this for us. We only have to
-call the `generate_password_hash(password)` function to generate a hash for a
-new `password` (e.g. when a user signs up or changes their password). That
-function generates a new salt value then uses it to hash the password in a
-single step.
+## File Structure
 
-Once we've generated a password hash and stored it in our database, we can then
-call the `check_password_hash(pw_hash, password)` function to check a whether a
-`password` supplied during login matches the `pw_hash` stored in our database
-for that particular user account.
+```
+InternLink/
+├── app.py                      # Main Flask application
+├── connect.py                  # Database connection configuration
+├── requirements.txt            # Python dependencies
+├── README.md                   # This file
+├── .gitignore                  # Git ignore rules
+├── db/
+│   ├── create_database.sql     # Database schema creation
+│   └── populate_database.sql   # Sample data insertion
+├── templates/                  # HTML templates
+│   ├── base.html              # Base template
+│   ├── index.html             # Home page
+│   ├── login.html             # Login form
+│   ├── register.html          # Registration form
+│   ├── student_dashboard.html # Student dashboard
+│   ├── employer_dashboard.html# Employer dashboard
+│   ├── admin_dashboard.html   # Admin dashboard
+│   ├── view_internships.html  # Internship listings
+│   ├── apply_internship.html  # Application form
+│   ├── track_applications.html# Application tracking
+│   ├── employer_applicants.html# Employer applicant view
+│   ├── admin_applications.html# Admin application view
+│   ├── profile.html           # User profile view
+│   ├── edit_profile.html      # Profile editing
+│   ├── manage_users.html      # User management
+│   ├── application_details.html# Detailed application view
+│   ├── 404.html               # Page not found
+│   └── 500.html               # Server error
+└── static/
+    └── uploads/
+        ├── images/            # Profile pictures and logos
+        └── resumes/           # Resume files
+```
+
+## Usage Instructions
+
+### Initial Setup
+
+1. **Access the Application**: Navigate to `http://localhost:5000`
+2. **Register as Student**: Click "Register" and create a student account
+3. **Login**: Use the credentials to access student features
+
+### Sample User Accounts
+
+The database population script creates sample accounts for testing:
+
+**Students**:
+- Username: `student1` | Password: `password123`
+- Username: `student2` | Password: `password456`
+
+**Employers**:
+- Username: `employer1` | Password: `company123`
+- Username: `employer2` | Password: `business456`
+
+**Administrators**:
+- Username: `admin1` | Password: `admin123`
+- Username: `admin2` | Password: `system456`
+
+### Key Workflows
+
+#### Student Journey
+1. Register account with personal and academic details
+2. Upload profile picture and resume (optional)
+3. Browse available internships using filters
+4. Apply to desired positions with cover letters
+5. Track application status and receive feedback
+
+#### Employer Journey
+1. Login with employer credentials
+2. View internships posted by your organization
+3. Review student applications with filtering options
+4. Accept or reject applications with feedback
+5. Manage company profile and information
+
+#### Administrator Journey
+1. Login with admin credentials
+2. Monitor platform statistics on dashboard
+3. View and filter all users across the system
+4. Review all internship applications
+5. Manage user account statuses
+
+## Configuration Options
+
+### File Upload Settings
+
+The application supports the following file types:
+- **Profile Images**: PNG, JPG, JPEG, GIF (max 16MB)
+- **Resumes**: PDF only (max 16MB)
+- **Company Logos**: PNG, JPG, JPEG, GIF (max 16MB)
+
+### Security Features
+
+- **Password Requirements**: Minimum 8 characters with letters and numbers
+- **Session Management**: Secure Flask sessions with role-based access
+- **File Security**: Secure filename handling and upload validation
+- **Password Hashing**: Bcrypt encryption for all passwords
+
+## Troubleshooting
+
+### Common Issues
+
+**Database Connection Errors**:
+- Verify MySQL server is running
+- Check connection credentials in `connect.py`
+- Ensure database exists and is populated
+
+**File Upload Issues**:
+- Check upload directory permissions
+- Verify file size limits
+- Ensure allowed file extensions
+
+**Login Problems**:
+- Confirm user account exists in database
+- Verify password meets requirements
+- Check account status is 'active'
+
+**Template Errors**:
+- Ensure all template files are in correct directories
+- Check for missing static files
+- Verify Bootstrap CSS is loading properly
+
+### Debug Mode
+
+For development, enable debug mode by modifying the last line in `app.py`:
+
+```python
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+## Deployment Notes
+
+### Production Considerations
+
+1. **Security**: Change the secret key in production
+2. **Database**: Use environment variables for database credentials
+3. **File Storage**: Consider cloud storage for uploaded files
+4. **HTTPS**: Enable SSL/TLS for secure connections
+5. **Error Handling**: Implement comprehensive logging
+
+### PythonAnywhere Deployment
+
+1. Upload all files except `connect.py` and virtual environment
+2. Create new `connect.py` with PythonAnywhere database settings
+3. Set up MySQL database using provided scripts
+4. Configure WSGI file to point to your Flask app
+5. Set up static file mappings for uploads directory
+
+## Support and Maintenance
+
+### Regular Maintenance Tasks
+
+- **Database Backups**: Regular backups of user data and applications
+- **File Cleanup**: Periodic cleanup of uploaded files
+- **Security Updates**: Keep dependencies updated
+- **Performance Monitoring**: Monitor application performance and database queries
+
+### Contact Information
+
+For technical support or feature requests, please contact the development team or submit issues through the project repository.
+
+## License
+
+This project is developed as part of academic coursework and is intended for educational purposes. All rights reserved.
