@@ -167,17 +167,23 @@ InternLink/
 
 The database population script creates sample accounts for testing:
 
-**Students**:
-- Username: `student1` | Password: `password123`
-- Username: `student2` | Password: `password456`
+**Students** (Password: `student123` for all):
+- Username: `sarah.chen` - Computer Science student from University of Auckland
+- Username: `james.wilson` - Software Engineering student from Victoria University
+- Username: `emily.martinez` - Information Systems student from University of Canterbury
+- Username: `alex.thompson` - Data Science student from Massey University
+- Username: `akhil.krishna` - CSE student from APJS
 
-**Employers**:
-- Username: `employer1` | Password: `company123`
-- Username: `employer2` | Password: `business456`
+**Employers** (Password: `employer123` for all):
+- Username: `techcorp.hr` - Jessica Martinez from TechCorp Solutions
+- Username: `innovate.recruit` - Mark Thompson from Innovate Solutions
+- Username: `fintech.careers` - Rachel Chen from FinTech Plus
+- Username: `green.energy` - Daniel Williams from Green Energy Corp
+- Username: `media.creative` - Sophie Brown from Creative Media Hub
 
-**Administrators**:
-- Username: `admin1` | Password: `admin123`
-- Username: `admin2` | Password: `system456`
+**Administrators** (Password: `admin123` for all):
+- Username: `admin.system` - Aravind S (System Administrator)
+- Username: `admin.support` - Angel Thomas (Support Administrator)
 
 ### Key Workflows
 
