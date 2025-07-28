@@ -1,26 +1,26 @@
 # InternLink - Internship Management System
 
-InternLink is a comprehensive web-based internship management platform designed to bridge the gap between students seeking internship opportunities and employers looking to connect with emerging talent. The system provides role-based access for students, employers, and administrators, each with tailored functionality to streamline the internship application and management process.
+InternLink is a web app for internship management where it provides a free platform for students to look for internship opportunities and employers who are looking for emerging talents.This web app provides role-based access for all users such as students , employers and administrators.Each of them will have various functionalities 
 
 ## Features Overview
 
 ### For Students
-- **Registration & Profile Management**: Create accounts with personal details, university information, and upload resumes
-- **Browse Internships**: Search and filter internship opportunities by location, title, and duration
-- **Application System**: Apply to internships with pre-filled forms and cover letter functionality
-- **Application Tracking**: Monitor application status (Pending, Accepted, Rejected) with employer feedback
+- **Registration & Profile Management**
+- **Browse Internships with Filters**
+- **Apply Internships**
+- **Application Tracking**
 
 ### For Employers
-- **Dashboard**: View and manage internships posted by their organization
-- **Application Management**: Review student applications with filtering capabilities
-- **Status Updates**: Accept or reject applications with optional feedback
-- **Profile Management**: Update company information and branding
+- **View Internships posted by their organization**
+- **View Application and filter it**
+- **Manage and update applications**
+- **Profile Management**
 
 ### For Administrators
-- **User Oversight**: View and manage all users across the platform
-- **System Monitoring**: Track platform statistics and user activity
-- **Application Review**: Monitor all internship applications system-wide
-- **User Status Control**: Activate or deactivate user accounts
+- **View and Filter Users and can change their status**
+- **Entire stats monitoring**
+- **Application Review and status update**
+- **View all the Internships**
 
 ## Technology Stack
 
@@ -34,7 +34,7 @@ InternLink is a comprehensive web-based internship management platform designed 
 
 ### Prerequisites
 
-Before setting up InternLink, ensure you have the following installed:
+Before setting up, install the following:
 - Python 3.7 or higher
 - MySQL Server 8.0 or higher
 - pip (Python package installer)
@@ -43,7 +43,7 @@ Before setting up InternLink, ensure you have the following installed:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/InternLink.git
+git clone https://github.com/../InternLink.git
 cd InternLink
 ```
 
@@ -51,16 +51,16 @@ cd InternLink
 
 ```bash
 # Create virtual environment
-python -m venv internlink_env
+python -m venv env
 
 # Activate virtual environment
 # On Windows:
-internlink_env\Scripts\activate
+env\Scripts\activate
 # On macOS/Linux:
-source internlink_env/bin/activate
+source env/bin/activate
 ```
 
-### Step 3: Install Dependencies
+### Step 3: Install Dependencies using requirements.txt
 
 ```bash
 pip install -r requirements.txt
@@ -69,22 +69,28 @@ pip install -r requirements.txt
 ### Step 4: Database Setup
 
 1. **Create Database**:
-   - Open MySQL Workbench or command line
+   - Open MySQL Workbench or cmd
+    ```sql
+      CREATE DATABASE internlink;
+    ```
+2. **Creating Tables and relations**
+   - Open cmd and move to folder containg create_database.sql (db in this case)
    - Execute the database creation script:
    ```sql
-   source db/create_database.sql
+   mysql -u <username> -p internlink < create_database.sql
    ```
 
 2. **Populate Database**:
+   - Move to folder containg populate_database.sql (db in this case)
    - Run the population script to add sample data:
    ```sql
-   source db/populate_database.sql
+   mysql -u <username> -p internlink < populate_database.sql
    ```
 
 ### Step 5: Configure Database Connection
 
 1. Create a `connect.py` file in the root directory
-2. Add your database connection details:
+2. Add the database connection details:
 
 ```python
 import mysql.connector
@@ -94,7 +100,7 @@ def getCursor():
         host='localhost',
         user='your_mysql_username',
         password='your_mysql_password',
-        database='internlink_db',
+        database='internlink',
         autocommit=True
     )
     cursor = connection.cursor()
@@ -103,7 +109,7 @@ def getCursor():
 
 ### Step 6: Create Upload Directories
 
-The application will automatically create necessary directories, but you can manually create them:
+During cloning Directories to store profiles pics and resumes will be automatically created (if not)
 
 ```bash
 mkdir -p static/uploads/images
@@ -118,35 +124,40 @@ python app.py
 
 The application will be available at `http://localhost:5000`
 
+
+## Deploying in PythonAnywhere
+
+
+
 ## File Structure
 
 ```
 InternLink/
-├── app.py                      # Main Flask application
-├── connect.py                  # Database connection configuration
-├── requirements.txt            # Python dependencies
-├── README.md                   # This file
-├── .gitignore                  # Git ignore rules
+├── app.py                      # Routes
+├── connect.py                  # Database connection file not included in git
+├── requirements.txt           
+├── README.md                   
+├── .gitignore                  # Git ignore files
 ├── db/
 │   ├── create_database.sql     # Database schema creation
 │   └── populate_database.sql   # Sample data insertion
 ├── templates/                  # HTML templates
-│   ├── base.html              # Base template
+│   ├── base.html              
 │   ├── index.html             # Home page
 │   ├── login.html             # Login form
 │   ├── register.html          # Registration form
-│   ├── student_dashboard.html # Student dashboard
-│   ├── employer_dashboard.html# Employer dashboard
-│   ├── admin_dashboard.html   # Admin dashboard
-│   ├── view_internships.html  # Internship listings
+│   ├── student_dashboard.html 
+│   ├── employer_dashboard.html
+│   ├── admin_dashboard.html   
+│   ├── view_internships.html  
 │   ├── apply_internship.html  # Application form
-│   ├── track_applications.html# Application tracking
-│   ├── employer_applicants.html# Employer applicant view
-│   ├── admin_applications.html# Admin application view
-│   ├── profile.html           # User profile view
+│   ├── track_applications.html  # Application tracking
+│   ├── employer_applicants.html   # Employer applicant view
+│   ├── admin_applications.html   
+│   ├── profile.html           # User profile 
 │   ├── edit_profile.html      # Profile editing
-│   ├── manage_users.html      # User management
-│   ├── application_details.html# Detailed application view
+│   ├── manage_users.html      # User management and list
+│   ├── application_details.html  # Detailed application view
 │   ├── 404.html               # Page not found
 │   └── 500.html               # Server error
 └── static/
@@ -168,10 +179,10 @@ InternLink/
 The database population script creates sample accounts for testing:
 
 **Students** :
-- Username: `sarah.chen` - Computer Science student from University of Auckland - Password : S@rahCh3n2025!
-- Username: `james.wilson` - Software Engineering student from Victoria University - Password : J@mesW1ls0n#
-- Username: `emily.martinez` - Information Systems student from University of Canterbury - Password : Em1lyM@rt1nez$
-- Username: `alex.thompson` - Data Science student from Massey University - Password : Al3xTh0mps0n%
+- Username: `sarah.chen` - Password : S@rahCh3n2025!
+- Username: `james.wilson` - Password : J@mesW1ls0n#
+- Username: `emily.martinez` - Password : Em1lyM@rt1nez$
+- Username: `alex.thompson` -  Password : Al3xTh0mps0n%
 - Username: `akhil.krishna` - CSE student from APJS - Password : Akhil@1234
 
 **Employers** :
@@ -220,37 +231,36 @@ The application supports the following file types:
 ### Security Features
 
 - **Password Requirements**: Minimum 8 characters with letters and numbers
-- **Session Management**: Secure Flask sessions with role-based access
+- **Session Management**
 - **File Security**: Secure filename handling and upload validation
 - **Password Hashing**: Bcrypt encryption for all passwords
+- **Email Verification**
 
 ## Troubleshooting
 
 ### Common Issues
 
 **Database Connection Errors**:
-- Verify MySQL server is running
-- Check connection credentials in `connect.py`
-- Ensure database exists and is populated
+- Verify MySQL server is okay
+- Check connection info in `connect.py`
+- Ensure database exist and is populated
 
 **File Upload Issues**:
-- Check upload directory permissions
-- Verify file size limits
+- Verify file size limits and recheck the file properties
 - Ensure allowed file extensions
 
 **Login Problems**:
-- Confirm user account exists in database
-- Verify password meets requirements
-- Check account status is 'active'
+- Confirm user account exists in db
+- Verify password 
+- Check account status is 'active' , only active accounts can login
 
 **Template Errors**:
-- Ensure all template files are in correct directories
-- Check for missing static files
-- Verify Bootstrap CSS is loading properly
+- Ensure all html files inside templates
+- Verify Bootstrap CSS and Js link in base.html
 
 ### Debug Mode
 
-For development, enable debug mode by modifying the last line in `app.py`:
+For development, enable debug mode by modifying the last line in `app.py` for production:
 
 ```python
 if __name__ == '__main__':
@@ -259,14 +269,6 @@ if __name__ == '__main__':
 
 ## Deployment Notes
 
-### Production Considerations
-
-1. **Security**: Change the secret key in production
-2. **Database**: Use environment variables for database credentials
-3. **File Storage**: Consider cloud storage for uploaded files
-4. **HTTPS**: Enable SSL/TLS for secure connections
-5. **Error Handling**: Implement comprehensive logging
-
 ### PythonAnywhere Deployment
 
 1. Upload all files except `connect.py` and virtual environment
@@ -274,19 +276,6 @@ if __name__ == '__main__':
 3. Set up MySQL database using provided scripts
 4. Configure WSGI file to point to your Flask app
 5. Set up static file mappings for uploads directory
-
-## Support and Maintenance
-
-### Regular Maintenance Tasks
-
-- **Database Backups**: Regular backups of user data and applications
-- **File Cleanup**: Periodic cleanup of uploaded files
-- **Security Updates**: Keep dependencies updated
-- **Performance Monitoring**: Monitor application performance and database queries
-
-### Contact Information
-
-For technical support or feature requests, please contact the development team or submit issues through the project repository.
 
 ## License
 
