@@ -98,8 +98,8 @@ import mysql.connector
 def getCursor():
     connection = mysql.connector.connect(
         host='localhost',
-        user='your_mysql_username',
-        password='your_mysql_password',
+        user='ur_mysql_username(root)',
+        password='password',
         database='internlink',
         autocommit=True
     )
@@ -127,56 +127,24 @@ The application will be available at `http://localhost:5000`
 
 ## Deploying in PythonAnywhere
 
+### PythonAnywhere Deployment
 
+1. Upload all the files except -> `connect.py` and virtual env
+2. Create new `connect.py` with PythonAnywhere database settings
+3. Set up MySQL database in PythonAnywhere - Open Mysql console there and use the 2 sql scripts to create and populate it
+4. Configure WSGI file to point to your Flask app
+5. Set up static file mappings for the uploads
 
-## File Structure
-
-```
-InternLink/
-├── app.py                      # Routes
-├── connect.py                  # Database connection file not included in git
-├── requirements.txt           
-├── README.md                   
-├── .gitignore                  # Git ignore files
-├── db/
-│   ├── create_database.sql     # Database schema creation
-│   └── populate_database.sql   # Sample data insertion
-├── templates/                  # HTML templates
-│   ├── base.html              
-│   ├── index.html             # Home page
-│   ├── login.html             # Login form
-│   ├── register.html          # Registration form
-│   ├── student_dashboard.html 
-│   ├── employer_dashboard.html
-│   ├── admin_dashboard.html   
-│   ├── view_internships.html  
-│   ├── apply_internship.html  # Application form
-│   ├── track_applications.html  # Application tracking
-│   ├── employer_applicants.html   # Employer applicant view
-│   ├── admin_applications.html   
-│   ├── profile.html           # User profile 
-│   ├── edit_profile.html      # Profile editing
-│   ├── manage_users.html      # User management and list
-│   ├── application_details.html  # Detailed application view
-│   ├── 404.html               # Page not found
-│   └── 500.html               # Server error
-└── static/
-    └── uploads/
-        ├── images/            # Profile pictures and logos
-        └── resumes/           # Resume files
-```
 
 ## Usage Instructions
 
 ### Initial Setup
 
-1. **Access the Application**: Navigate to `http://localhost:5000`
-2. **Register as Student**: Click "Register" and create a student account
-3. **Login**: Use the credentials to access student features
+1. Open `http://localhost:5000` in browser tab
+2. Click Register and create a student account by providing required details + it should follow requirements
+3. It will be automatically logged in (if not log in using username and password)
 
 ### Sample User Accounts
-
-The database population script creates sample accounts for testing:
 
 **Students** :
 - Username: `sarah.chen` - Password : S@rahCh3n2025!
@@ -186,11 +154,11 @@ The database population script creates sample accounts for testing:
 - Username: `akhil.krishna` - CSE student from APJS - Password : Akhil@1234
 
 **Employers** :
-- Username: `techcorp.hr` - Jessica Martinez from TechCorp Solutions - Password : T3chC0rpHR2025!
-- Username: `innovate.recruit` - Mark Thompson from Innovate Solutions - Password : 1nn0v@t3R3crU1t#
-- Username: `fintech.careers` - Rachel Chen from FinTech Plus - Password : F1nt3chC@r33rs$
-- Username: `green.energy` - Daniel Williams from Green Energy Corp - Password : Gr33nEn3rgy%
-- Username: `media.creative` - Sophie Brown from Creative Media Hub - Password : M3d1@Cr3@t1v3^
+- Username: `techcorp.hr`  - Password : T3chC0rpHR2025!
+- Username: `innovate.recruit` - Password : 1nn0v@t3R3crU1t#
+- Username: `fintech.careers` - Password : F1nt3chC@r33rs$
+- Username: `green.energy` - Password : Gr33nEn3rgy%
+- Username: `media.creative` -  Password : M3d1@Cr3@t1v3^
 
 **Administrators** :
 - Username: `admin.system` - Aravind S (System Administrator) - Password : Adm1nSyst3m*
@@ -254,29 +222,11 @@ The application supports the following file types:
 - Verify password 
 - Check account status is 'active' , only active accounts can login
 
-**Template Errors**:
-- Ensure all html files inside templates
-- Verify Bootstrap CSS and Js link in base.html
-
-### Debug Mode
-
-For development, enable debug mode by modifying the last line in `app.py` for production:
-
-```python
-if __name__ == '__main__':
-    app.run(debug=True)
-```
-
-## Deployment Notes
-
-### PythonAnywhere Deployment
-
-1. Upload all files except `connect.py` and virtual environment
-2. Create new `connect.py` with PythonAnywhere database settings
-3. Set up MySQL database using provided scripts
-4. Configure WSGI file to point to your Flask app
-5. Set up static file mappings for uploads directory
+**Template Error**:
+- Ensure all html files are placed inside templates
+- Verify Bootstrap CSS and Js scripts are specified in base.html
+  
 
 ## License
 
-This project is developed as part of academic coursework and is intended for educational purposes. All rights reserved.
+This is a Website based on flask for academic purpose and all the data provided are samples . All rights reserved
