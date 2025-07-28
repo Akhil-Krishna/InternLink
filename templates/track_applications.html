@@ -14,10 +14,9 @@
                     <th>Company</th>
                     <th>Location</th>
                     <th>Status</th>
-                    <!-- <th>Cover Letter</th>
-                    <th>Resume</th>
-                    <th>Feedback</th> -->
+                    <th>Reason</th>
                     <th>Applied On</th>
+                    <th>Details</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,22 +33,25 @@
                             {{ a[3] }}
                         </span>
                     </td>
-                    <!-- <td>
-                        {% if a[5] %}
-                        <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#coverLetter{{ loop.index }}">
+
+                    <!-- Feedback Modal Button -->
+                    <td class="text-center">
+                        {% if a[4] and a[3] != 'Pending' %}
+                        <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ loop.index }}">
                             View
                         </button>
 
-                    
-                        <div class="modal fade" id="coverLetter{{ loop.index }}" tabindex="-1">
-                            <div class="modal-dialog">
+                        <!-- Feedback Modal -->
+                        <div class="modal fade" id="feedbackModal{{ loop.index }}" tabindex="-1"
+                             aria-labelledby="feedbackLabel{{ loop.index }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Cover Letter</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        <h5 class="modal-title" id="feedbackLabel{{ loop.index }}">Feedback</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <p>{{ a[5] }}</p>
+                                        <p class="text-wrap">{{ a[4] }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -58,27 +60,14 @@
                         —
                         {% endif %}
                     </td>
-                    <td>
-                        {% if a[6] %}
-                        <a href="{{ url_for('static', filename='uploads/resumes/' + a[6]) }}"
-                           target="_blank" class="btn btn-sm btn-outline-primary">View</a>
-                        {% else %}
-                        —
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if a[4] and a[3] != 'Pending' %}
-                        <span class="text-wrap">{{ a[4] }}</span>
-                        {% else %}
-                        —
-                        {% endif %}
-                    </td> -->
-                    <td>{{ a[7].strftime('%Y-%m-%d') if a[7] else 'N/A' }}</td>
-                    <td class="text-center">
-                        <a href="{{ url_for('view_application_details', student_id= a[11], internship_id=a[10]) }}"
-                            class="btn btn-sm btn-info">View Details</a>
-                        </td>
 
+                    <td>{{ a[7].strftime('%Y-%m-%d') if a[7] else 'N/A' }}</td>
+
+                    <!-- View Details -->
+                    <td class="text-center">
+                        <a href="{{ url_for('view_application_details', student_id=a[11], internship_id=a[10]) }}"
+                           class="btn btn-sm btn-info">View Details</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

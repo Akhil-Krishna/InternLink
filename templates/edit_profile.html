@@ -1,110 +1,184 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container my-5">
-  <h2 class="mb-4">Edit Profile</h2>
+<div class="container-fluid py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+      <!-- Header Section -->
+      <div class="mb-4">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('profile') }}" class="text-decoration-none">Profile</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+          </ol>
+        </nav>
+        <h2 class="h3 mb-1 text-primary fw-bold">Edit Profile</h2>
+        <p class="text-muted mb-0">Update your personal information and settings</p>
+      </div>
 
-  <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-    <div class="row">
-      <!-- Profile picture -->
-      <div class="col-md-4 text-center mb-4">
-        <img src="{{ url_for('static', filename='uploads/images/' + profile.profile_image) }}"
-             class="img-thumbnail rounded-circle"
-             style="width: 150px; height: 150px; object-fit: cover;">
-        <div class="mt-2">
-          <input type="file" name="profile_pic" class="form-control">
-          <div class="form-check mt-2">
-            <input class="form-check-input" type="checkbox" name="remove_pic" id="remove_pic">
-            <label class="form-check-label" for="remove_pic">Remove current picture</label>
+      <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <!-- Profile Picture Section -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-light py-3">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-camera me-2 text-primary"></i>Profile Picture
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row align-items-center">
+              <div class="col-12 col-md-4 text-center mb-3 mb-md-0">
+                <img src="{{ url_for('static', filename='uploads/images/' + profile.profile_image) }}"
+                     class="img-thumbnail rounded-circle shadow-sm"
+                     style="width: 150px; height: 150px; object-fit: cover;">
+              </div>
+              <div class="col-12 col-md-8">
+                <div class="mb-3">
+                  <input type="file" name="profile_pic" class="form-control">
+                  <div class="form-text">Accepted formats: JPG, PNG, GIF. Max size: 5MB</div>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="remove_pic" id="remove_pic">
+                  <label class="form-check-label" for="remove_pic">Remove current picture</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Main form -->
-      <div class="col-md-8">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label for="first_name" class="form-label">First Name</label>
-            <input name="first_name" value="{{ profile.first_name }}" class="form-control" required>
+        <!-- Personal Information Section -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-primary text-white py-3">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-person me-2"></i>Personal Information
+            </h5>
           </div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="first_name" class="form-label fw-medium">First Name</label>
+                <input name="first_name" value="{{ profile.first_name }}" class="form-control" required>
+              </div>
 
-          <div class="col-md-6">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input name="last_name" value="{{ profile.last_name }}" class="form-control" required>
-          </div>
+              <div class="col-md-6">
+                <label for="last_name" class="form-label fw-medium">Last Name</label>
+                <input name="last_name" value="{{ profile.last_name }}" class="form-control" required>
+              </div>
 
-          {% if role == 'admin' %}
-          <div class="col-12">
-            <label for="email" class="form-label">Email</label>
-            <input name="email" value="{{ profile.email }}" class="form-control" required>
+              {% if role == 'admin' %}
+              <div class="col-12">
+                <label for="email" class="form-label fw-medium">Email</label>
+                <input name="email" value="{{ profile.email }}" class="form-control" required>
+              </div>
+              {% endif %}
+            </div>
           </div>
-          {% endif %}
-
-          {% if role == 'student' %}
-          <div class="col-md-6">
-            <label for="university" class="form-label">University</label>
-            <input name="university" value="{{ profile.university }}" class="form-control" required>
-          </div>
-
-          <div class="col-md-6">
-            <label for="course" class="form-label">Course</label>
-            <input name="course" value="{{ profile.course }}" class="form-control" required>
-          </div>
-
-          <div class="col-12">
-            <label for="resume" class="form-label">Upload Resume (PDF/DOC)</label>
-            <input type="file" name="resume" class="form-control">
-            {% if profile.resume_path %}
-            <small>Current: {{ profile.resume_path }}</small>
-            {% endif %}
-          </div>
-          {% endif %}
-
-          {% if role == 'employer' %}
-          <div class="col-12">
-            <label for="company_name" class="form-label">Company Name</label>
-            <input name="company_name" value="{{ profile.company_name }}" class="form-control" required>
-          </div>
-
-          <div class="col-12">
-            <label for="company_description" class="form-label">Company Description</label>
-            <textarea name="company_description" class="form-control" rows="3">{{ profile.company_description }}</textarea>
-          </div>
-
-          <div class="col-md-6">
-            <label for="website" class="form-label">Website</label>
-            <input name="website" value="{{ profile.website }}" class="form-control">
-          </div>
-
-          <div class="col-md-6">
-            <label for="logo" class="form-label">Upload Logo</label>
-            <input type="file" name="logo" class="form-control">
-            {% if profile.logo_path %}
-            <small>Current: {{ profile.logo_path }}</small>
-            {% endif %}
-          </div>
-          {% endif %}
         </div>
-      </div>
-    </div>
 
-    <!-- Change password -->
-    <hr class="my-4">
-    <h5>Change Password (optional)</h5>
-    <div class="row g-3">
-      <div class="col-md-6">
-        <label for="new_password" class="form-label">New Password</label>
-        <input type="password" name="new_password" class="form-control" placeholder="Min 8 chars, letters & numbers">
-      </div>
-      <div class="col-md-6">
-        <label for="confirm_password" class="form-label">Confirm New Password</label>
-        <input type="password" name="confirm_password" class="form-control">
-      </div>
-    </div>
+        <!-- Role-specific Information -->
+        {% if role == 'student' %}
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-info text-white py-3">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-mortarboard me-2"></i>Education Details
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="university" class="form-label fw-medium">University</label>
+                <input name="university" value="{{ profile.university }}" class="form-control" required>
+              </div>
 
-    <div class="mt-4">
-      <button type="submit" class="btn btn-primary">Save Changes</button>
-      <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancel</a>
+              <div class="col-md-6">
+                <label for="course" class="form-label fw-medium">Course</label>
+                <input name="course" value="{{ profile.course }}" class="form-control" required>
+              </div>
+
+              <div class="col-12">
+                <label for="resume" class="form-label fw-medium">Upload Resume (PDF/DOC)</label>
+                <input type="file" name="resume" class="form-control">
+                {% if profile.resume_path %}
+                <div class="mt-2 p-2 bg-light rounded">
+                  <small class="text-muted">Current: {{ profile.resume_path }}</small>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if role == 'employer' %}
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-success text-white py-3">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-building me-2"></i>Company Information
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-12">
+                <label for="company_name" class="form-label fw-medium">Company Name</label>
+                <input name="company_name" value="{{ profile.company_name }}" class="form-control" required>
+              </div>
+
+              <div class="col-12">
+                <label for="company_description" class="form-label fw-medium">Company Description</label>
+                <textarea name="company_description" class="form-control" rows="3">{{ profile.company_description }}</textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label for="website" class="form-label fw-medium">Website</label>
+                <input name="website" value="{{ profile.website }}" class="form-control">
+              </div>
+
+              <div class="col-md-6">
+                <label for="logo" class="form-label fw-medium">Upload Logo</label>
+                <input type="file" name="logo" class="form-control">
+                {% if profile.logo_path %}
+                <div class="mt-2 p-2 bg-light rounded">
+                  <small class="text-muted">Current: {{ profile.logo_path }}</small>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Password Change Section -->
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-warning text-dark py-3">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-shield-lock me-2"></i>Change Password (optional)
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="new_password" class="form-label fw-medium">New Password</label>
+                <input type="password" name="new_password" class="form-control" placeholder="Min 8 chars, letters & numbers">
+              </div>
+              <div class="col-md-6">
+                <label for="confirm_password" class="form-label fw-medium">Confirm New Password</label>
+                <input type="password" name="confirm_password" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-md-row gap-3 justify-content-end align-items-center">
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary btn-lg px-4">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-lg px-4">Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
-  </form>
+  </div>
 </div>
 {% endblock %}

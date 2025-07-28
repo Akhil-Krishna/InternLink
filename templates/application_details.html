@@ -1,86 +1,284 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container py-4">
-    <h3 class="mb-3 text-center">Application for {{ application.title }}</h3>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+      
+      <!-- Header Section -->
+      <div class="mb-4">
+        <div class="text-center">
+          <h2 class="h3 mb-2 text-primary fw-bold">Application Details</h2>
+          <h4 class="h5 text-muted">{{ application.title }}</h4>
+        </div>
+      </div>
 
-    <div class="row g-3">
-        {% if application.viewer_role == 'admin' %}
-            <div class="card mb-3">
-                <div class="card-body">
-                <h5 class="card-title">Student Info</h5>
-                <p><strong>Full Name:</strong> {{ application.student_full_name }}</p>
-                <p><strong>Username:</strong> {{ application.student_username }}</p>
-                <hr>
-                <h5 class="card-title">Employer Info</h5>
-                <p><strong>Full Name:</strong> {{ application.employer_full_name }}</p>
-                <p><strong>Username:</strong> {{ application.employer_username }}</p>
-                </div>
+      <!-- Admin Info Section -->
+      {% if application.viewer_role == 'admin' %}
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white py-3">
+              <h5 class="card-title mb-0">
+                <i class="fa fa-users me-2"></i>User Information
+              </h5>
             </div>
-            {% endif %}
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <div class="col-12 col-md-6">
+                  <div class="border-start border-primary border-3 ps-3">
+                    <h6 class="text-primary mb-2">
+                      <i class="fa fa-graduation-cap me-1"></i>Student Information
+                    </h6>
+                    <p class="mb-1"><strong>Full Name:</strong> {{ application.student_full_name }}</p>
+                    <p class="mb-0"><strong>Username:</strong> {{ application.student_username }}</p>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="border-start border-success border-3 ps-3">
+                    <h6 class="text-success mb-2">
+                      <i class="fa fa-building me-1"></i>Employer Information
+                    </h6>
+                    <p class="mb-1"><strong>Full Name:</strong> {{ application.employer_full_name }}</p>
+                    <p class="mb-0"><strong>Username:</strong> {{ application.employer_username }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
 
-        <!-- Application Info -->
-    <div class="card shadow-sm mt-4">
-        <div class="card-body">
-            <h5>Application Status</h5>
-            <p><strong>Status:</strong> 
-               <span class="badge 
-                   {% if application.status == 'Accepted' %}bg-success
-                   {% elif application.status == 'Rejected' %}bg-danger
-                   {% else %}bg-secondary{% endif %}">
-                {{ application.status }}</span>
-            </p>
+      <!-- Application Status Card -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-secondary text-white py-3">
+              <h5 class="card-title mb-0">
+                <i class="fa fa-file-text me-2"></i>Application Status
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-4 align-items-center">
+                <div class="col-12 col-md-6">
+                  <div class="d-flex align-items-center">
+                    <i class="fa fa-clock-o me-3 text-info fs-4"></i>
+                    <div>
+                      <h6 class="mb-1">Current Status</h6>
+                      <span class="badge fs-6 px-3 py-2
+                        {% if application.status == 'Accepted' %}bg-success
+                        {% elif application.status == 'Rejected' %}bg-danger
+                        {% else %}bg-warning text-dark{% endif %}">
+                        {{ application.status }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="d-flex align-items-center">
+                    <i class="fa fa-calendar me-3 text-info fs-4"></i>
+                    <div>
+                      <h6 class="mb-1">Applied On</h6>
+                      <span class="text-muted">{{ application.application_date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            {% if application.feedback %}
-            <p><strong>Feedback(Reason):</strong> {{ application.feedback }}</p>
-            {% endif %}
+              {% if application.feedback %}
+              <hr class="my-3">
+              <div class=" border-end border-info border-3" >
+                <h6 class="alert-heading mb-2">
+                  <i class="fa fa-comment me-1"></i>Feedback from Employer
+                </h6>
+                <p class="mb-0">{{ application.feedback }}</p>
+              </div>
+              {% endif %}
 
-            <p><strong>Cover Letter:</strong><br>{{ application.cover_letter }}</p>
+              <hr class="my-3">
+              <div>
+                <h6 class="mb-2">
+                  <i class="fa fa-envelope me-1"></i>Cover Letter
+                </h6>
+                <div class="bg-light p-3 rounded">
+                  <p class="mb-0">{{ application.cover_letter }}</p>
+                </div>
+              </div>
 
-            {% if application.resume_path %}
-            <p><strong>Resume:</strong> 
+              {% if application.resume_path %}
+              <hr class="my-3">
+              <div>
+                <h6 class="mb-2">
+                  <i class="fa fa-file-pdf-o me-1"></i>Resume
+                </h6>
                 <a href="{{ url_for('static', filename='uploads/resumes/' + application.resume_path) }}" 
-                   class="btn btn-sm btn-outline-primary" target="_blank">View Resume</a>
-            </p>
-            {% endif %}
-
-            <p><strong>Applied on:</strong> {{ application.application_date.strftime('%Y-%m-%d') }}</p>
+                   class="btn btn-outline-primary" target="_blank">
+                                     <i class="fa fa-eye me-1"></i>View Resume
+                </a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
+
+      <!-- Details Section -->
+      <div class="row g-4">
         <!-- Internship Details -->
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>Internship Details</h5>
-                    <p><strong>Title:</strong> {{ application.title }}</p>
-                    <p><strong>Description:</strong> {{ application.description }}</p>
-                    <p><strong>Location:</strong> {{ application.location }}</p>
-                    <p><strong>Duration:</strong> {{ application.duration }}</p>
-                    <p><strong>Skills:</strong> {{ application.skills_required or 'N/A' }}</p>
-                    <p><strong>Stipend:</strong> {{ application.stipend or 'Unpaid' }}</p>
-                    <p><strong>Deadline:</strong> {{ application.deadline.strftime('%Y-%m-%d') }}</p>
-                    <p><strong>Posted on:</strong> {{ application.posted_date.strftime('%Y-%m-%d') }}</p>
-                </div>
+        <div class="col-12 col-lg-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-success text-white py-3">
+              <h5 class="card-title mb-0">
+                <i class="fa fa-briefcase me-2"></i>Internship Details
+              </h5>
             </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-tag me-3 text-success mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Title</h6>
+                      <p class="mb-0 fw-medium">{{ application.title }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-align-left me-3 text-success mt-1"></i>
+                    <div class="w-100">
+                      <h6 class="mb-1">Description</h6>
+                      <p class="mb-0 text-muted">{{ application.description }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12 col-sm-6">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-map-marker me-3 text-success mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Location</h6>
+                      <p class="mb-0">{{ application.location }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12 col-sm-6">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-clock-o me-3 text-success mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Duration</h6>
+                      <p class="mb-0">{{ application.duration }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-wrench me-3 text-success mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Required Skills</h6>
+                      <p class="mb-0">{{ application.skills_required or 'Not specified' }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12 col-sm-6">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-dollar me-3 text-success mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Stipend</h6>
+                      <p class="mb-0">{{ application.stipend or 'Unpaid' }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12 col-sm-6">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-calendar-times-o me-3 text-success mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Deadline</h6>
+                      <p class="mb-0">{{ application.deadline.strftime('%B %d, %Y') }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-calendar-plus-o me-3 text-success mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Posted On</h6>
+                      <p class="mb-0">{{ application.posted_date.strftime('%B %d, %Y') }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Company Info -->
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>Company Info</h5>
-                    <p><strong>Name:</strong> {{ application.company_name }}</p>
-                    <p><strong>Website:</strong> 
-                        <a href="{{ application.website }}" target="_blank">
-                            {{ application.website }}
-                        </a>
-                    </p>
-                    <p><strong>Description:</strong> {{ application.company_description }}</p>
-                </div>
+        <!-- Company Information -->
+        <div class="col-12 col-lg-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-warning text-dark py-3">
+              <h5 class="card-title mb-0">
+                <i class="fa fa-building me-2"></i>Company Information
+              </h5>
             </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-building me-3 text-warning mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Company Name</h6>
+                      <p class="mb-0 fw-medium">{{ application.company_name }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-globe me-3 text-warning mt-1"></i>
+                    <div>
+                      <h6 class="mb-1">Website</h6>
+                      <a href="{{ application.website }}" target="_blank" class="text-decoration-none">
+                        {{ application.website }}
+                        <i class="fa fa-external-link ms-1 small"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="d-flex align-items-start">
+                    <i class="fa fa-align-left me-3 text-warning mt-1"></i>
+                    <div class="w-100">
+                      <h6 class="mb-1">Company Description</h6>
+                      <p class="mb-0 text-muted">{{ application.company_description }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="text-center">
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-4">
+              <i class="fa fa-arrow-left me-2"></i>Go Back
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
-
-    
+  </div>
 </div>
 {% endblock %}

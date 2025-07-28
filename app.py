@@ -1,3 +1,5 @@
+
+#import statements 
 from flask import Flask, render_template, session, redirect, url_for, flash, request, send_from_directory
 from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
@@ -5,16 +7,19 @@ import os
 from connect import getCursor
 from functools import wraps
 from datetime import datetime , date
+import re
 
 
+
+# App defined
 app = Flask(__name__)
-app.jinja_env.globals.update(now=datetime.now)
-app.secret_key = 'internlink_secure_key'  # Change this in production
+app.jinja_env.globals.update(now=datetime.now) # To get current date in templates
+app.secret_key = 'internlink_secure_key'  #will Change  in production
 
 # Configure upload folders
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['PROFILE_IMAGE_UPLOADS'] = os.path.join(app.config['UPLOAD_FOLDER'], 'images')
-app.config['RESUME_UPLOADS'] = os.path.join(app.config['UPLOAD_FOLDER'], 'resumes')
+app.config['PROFILE_IMAGE_UPLOADS'] = os.path.join(app.config['UPLOAD_FOLDER'], 'images') # profile pics and company logos go here
+app.config['RESUME_UPLOADS'] = os.path.join(app.config['UPLOAD_FOLDER'], 'resumes')  # resume go here
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Create upload directories if they don't exist
@@ -25,6 +30,7 @@ os.makedirs(app.config['RESUME_UPLOADS'], exist_ok=True)
 ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 ALLOWED_RESUME_EXTENSIONS = ['pdf']
 
+#hashing password
 bcrypt = Bcrypt(app)
 
 def allowed_file(filename, allowed_extensions):
@@ -33,6 +39,7 @@ def allowed_file(filename, allowed_extensions):
 
 # ========== AUTH DECORATOR ==========
 def login_required(role=None):
+    """ Decorator - for login required task"""
     def wrapper(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -48,18 +55,28 @@ def login_required(role=None):
 
 # ========== ROUTES ==========
 
-@app.route('/favicon.ico')
-def favicon():
-    return '', 204
-
-
-
+# Home Page -> will have Dashboard button (Initial commit)
 @app.route('/')
 def index():
+    """
+    Home page - Just as a placeholder
+    """
     return render_template('index.html')
 
+    # 1.c Registration - Students (Initial commit)
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+        Registration 
+        Handles student user registration with optional profile picture and resume upload.
+
+            - Validates form inputs (username, email, password, etc.)
+            - Verifies uniqueness of username and email
+            - Hashes password securely using bcrypt
+            - Saves uploaded profile picture and resume if provided
+            - Inserts user into `user` and `student` tables
+            - Starts session and redirects to student dashboard upon success
+    """
     cursor, db = getCursor()
 
     if request.method == 'POST':
@@ -73,6 +90,31 @@ def register():
         university = request.form['university']
         course = request.form['course']
         
+        # Registration validation 
+        if not first_name:
+            flash("First name is required.")
+            return render_template('register.html')
+        if not last_name:
+            flash("Last Name is required.")
+            return render_template('register.html')
+        if not email:
+            flash("Email needed.")
+            return render_template('register.html')
+        
+        email_pattern = r'^[^@]+@[^@]+\.[^@]+$'
+        if not re.match(email_pattern, email):
+            flash("Invalid email format.")
+            return render_template('register.html')
+
+        if not username:
+            flash("Username needed.")
+            return render_template('register.html')
+        if not university or not course:
+            flash("University and Course are required.")
+            return render_template('register.html')
+        if not password:
+            flash("Password is required")
+            return render_template('register.html')
         if password != confirm:
             flash("Passwords do not match.")
             return render_template('register.html')
@@ -96,23 +138,32 @@ def register():
         
         
          # Handle file uploads
-        profile_pic = request.files['profile_pic']
-        resume = request.files['resume']
+        profile_pic = request.files.get('profile_pic')
+        resume = request.files.get('resume')
+
 
         def allowed_file(filename, allowed_exts):
             return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_exts
 
-        if not (allowed_file(profile_pic.filename, ALLOWED_IMAGE_EXTENSIONS) and allowed_file(resume.filename, ALLOWED_RESUME_EXTENSIONS)):
-            flash("Invalid file format for profile picture or resume.")
-            return render_template("register.html")
+        # Validate files only if they were uploaded
+        if profile_pic and profile_pic.filename:
+            if not allowed_file(profile_pic.filename, ALLOWED_IMAGE_EXTENSIONS):
+                flash("Invalid profile picture format.")
+                return render_template("register.html")
+            profile_filename = secure_filename(username + "_pic_" + profile_pic.filename)
+            profile_pic.save(os.path.join(app.config['PROFILE_IMAGE_UPLOADS'], profile_filename))
+        else:
+            profile_filename = None  # No file uploaded
 
-        # Save files securely
-        profile_filename = secure_filename(username + "_pic_" + profile_pic.filename)
-        resume_filename = secure_filename(username + "_resume_" + resume.filename)
+        if resume and resume.filename:
+            if not allowed_file(resume.filename, ALLOWED_RESUME_EXTENSIONS):
+                flash("Invalid resume format.")
+                return render_template("register.html")
+            resume_filename = secure_filename(username + "_resume_" + resume.filename)
+            resume.save(os.path.join(app.config['RESUME_UPLOADS'], resume_filename))
+        else:
+            resume_filename = None
 
-        profile_pic.save(os.path.join(app.config['PROFILE_IMAGE_UPLOADS'], profile_filename))
-        resume.save(os.path.join(app.config['RESUME_UPLOADS'], resume_filename))
-        
         # Insert into user table
         cursor.execute("""INSERT INTO user (username, full_name, first_name, last_name, email, password_hash,profile_image, role, status)
                           VALUES (%s, %s, %s, %s,%s, %s,%s, %s,%s)""",
@@ -130,9 +181,6 @@ def register():
                        (user_id, university, course,  resume_filename))
 
         db.commit()
-
-        # flash("Registration successful. Please log in.")
-        # return redirect(url_for('login'))
         
         cursor.execute("SELECT user_id, role FROM user WHERE username = %s", (username,))
         user_data = cursor.fetchone()
@@ -145,8 +193,15 @@ def register():
 
     return render_template('register.html')
 
+
+    # 1.a Login - All users (initial commit)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+        Login for all users:
+            - Same UI for all users
+            - USername and password no extra steps
+    """
     cursor, db = getCursor()
     if request.method == 'POST':
         username = request.form['username']
@@ -173,8 +228,14 @@ def login():
     
     return render_template('login.html')
 
+
+    # 1.b Logout - All users (Initial commit)
 @app.route('/logout')
 def logout():
+    """
+        Logout 
+            - Same for all user
+    """
     session.clear()
     flash("You have been logged out.")
     return redirect(url_for('index'))
@@ -182,8 +243,13 @@ def logout():
 # ========== Internship application ==================
 
 
-    # Browsing Internship Function - Admin and Students
+    # 2.a Browsing Internship Function - Admin and Students (2nd task commit)
 def get_filtered_internships():
+    '''
+        Listing and Filtering internships for Student and Admin
+            - Same filtering based on title , category,skill , duration , location
+            - Same function for both admin and student 
+    '''
     cursor, db = getCursor()
     location = request.args.get('location', '')
     title = request.args.get('title', '')
@@ -242,15 +308,25 @@ def get_filtered_internships():
 
 # ========== STUDENT ROUTES ==========
 
+    # Student Dashboard not specific task
 @app.route('/student')
 @login_required('student')
 def student_dashboard():
+    """
+        Introducing Internlink - with all features button to navigate
+            - UI 
+            - Buttons
+    """
     return render_template('student_dashboard.html')
 
-    # Internship Application - Browse Intership - Student
+    # 2.a Internship Application - Browse Intership - Student  (2nd commit)
 @app.route('/student/internships')
 @login_required('student')
 def student_browse_internships():
+    """
+        Listing of Internship with Apply button for Students 
+            - uses get_filtered_internship() function
+    """
     cursor, db = getCursor()
 
     internships, filters = get_filtered_internships()
@@ -275,10 +351,17 @@ def student_browse_internships():
         today=date.today()
     )
 
-    #Internship Application - Student - View list of application of that student
+    #2.c Internship Application - Student - View list of application of that student
 @app.route('/student/applications')
 @login_required('student')
 def track_applications():
+    """
+        Listing all application till now by that user
+            - Status (Accept,Pending , Reject)
+            - View Reason/feedback for Accepting or Rejecting as a card
+            - Track or See Full details of the internship by clicking View Details Button there
+            - More Detail Page - Button
+    """
     cursor, db = getCursor()
 
     # Get student_id
@@ -305,9 +388,16 @@ def track_applications():
 
     return render_template('track_applications.html', applications=applications)
 
+    # 2.c - Details of applied internship - Student, Admin (2nd commit)
 @app.route('/application/<int:student_id>/<int:internship_id>')
 @login_required()
 def view_application_details(student_id, internship_id):
+    """
+        Shows more Details of the Applied Internship 
+            - Admin, Student both
+            - Will get every details of company,internship and Application status,feedback ,cover letter etc
+            - For admin - extra info of applicant and employer
+    """
     cursor, db = getCursor()
     role = session['role']
     user_id = session['user_id']
@@ -384,10 +474,16 @@ def view_application_details(student_id, internship_id):
     return render_template("application_details.html", application=application)
 
 
-    #Internship Application - Apply Internship
+    #2.b Internship Application - Apply Internship - Student (2nd commit)
 @app.route('/student/apply/<int:internship_id>', methods=['GET', 'POST'])
 @login_required('student')
 def apply_internship(internship_id):
+    """
+        Apply a specific internship
+            - Moves to a prefilled info containing application form
+            - Cover letter
+            - Resume upload/replace
+    """
     cursor, db = getCursor()
 
     # Fetch internship
@@ -458,7 +554,7 @@ SELECT s.student_id, u.full_name, u.email, s.university, s.course, s.resume_path
 
     return render_template("apply_internship.html", internship=internship,
                        student=(full_name, email, university, course),
-                       existing_resume=row[4])
+                       existing_resume=row[5])
 
 
 
@@ -467,9 +563,17 @@ SELECT s.student_id, u.full_name, u.email, s.university, s.course, s.resume_path
 
 # ========== EMPLOYER ROUTES ===========================================================
 
+    # 3.a Manage Internship Applications -Employer dashboard - View Internships posted by them with filter 
+    # (3rd commit)
 @app.route('/employer')
 @login_required('employer')
 def employer_dashboard():
+    """
+    Listing all internships posted by that employer
+        -  List of internships
+        -  view applicants of each internship
+        -  Filter internships by Title , no of openings etc
+    """
     cursor, db = getCursor()
 
     # Get employer ID from logged-in user
@@ -522,9 +626,18 @@ def employer_dashboard():
     }
 
     return render_template('employer_dashboard.html', internships=internships, filters=filters)
+
+    # 3.b - View applications-with filter (4th commit)
 @app.route('/employer/applicants/<int:internship_id>')
 @login_required('employer')
 def view_applicants(internship_id):
+    '''
+        View list of applicants of a specific internship
+        Args :- Intership_id
+        
+            - List of applicants of a specific internship
+            - Filter them based on full name , status
+    '''
     cursor, db = getCursor()
 
     # Verify internship belongs to current employer
@@ -573,9 +686,17 @@ def view_applicants(internship_id):
                            internship=internship,
                            filters={'name': name_filter, 'status': status_filter})
 
+    #3.c - Change Status of Application - Admin and Employer (5th commit)
 @app.route('/application/update/<int:internship_id>/<int:student_id>', methods=['POST'])
 @login_required()
 def update_application_status(internship_id, student_id):
+    """
+        Update the status of an application of a specific intership
+        Args - intership id and that applicants-std-id
+        
+            - Change status to Accept,Reject
+            - Add Optional feedback
+    """
     cursor, db = getCursor()
     role = session['role']
     user_id = session['user_id']
@@ -653,92 +774,18 @@ def update_application_status(internship_id, student_id):
 
 
 
-# Add and Edit Internship Now not needed
-
-# @app.route('/employer/post', methods=['GET', 'POST'])
-# @login_required('employer')
-# def post_internship():
-#     cursor, db = getCursor()
-    
-#     if request.method == 'POST':
-#         # Get employer ID
-#         cursor.execute("SELECT emp_id FROM employer WHERE user_id = %s", (session['user_id'],))
-#         emp_row = cursor.fetchone()
-#         if not emp_row:
-#             flash("Employer profile not found.")
-#             return redirect(url_for('employer_dashboard'))
-        
-#         emp_id = emp_row[0]
-        
-#         title = request.form['title']
-#         description = request.form['description']
-#         requirements = request.form['requirements']
-#         location = request.form['location']
-#         duration = request.form['duration']
-#         stipend = request.form.get('stipend', 0)
-        
-#         cursor.execute("""
-#             INSERT INTO internship (company_id, title, description, requirements, location, duration, stipend, status)
-#             VALUES (%s, %s, %s, %s, %s, %s, %s, 'active')
-#         """, (emp_id, title, description, requirements, location, duration, stipend))
-#         db.commit()
-        
-#         flash("Internship posted successfully!")
-#         return redirect(url_for('employer_dashboard'))
-    
-#     return render_template('post_internship.html')
-# @app.route('/employer/edit/<int:internship_id>', methods=['GET', 'POST'])
-# @login_required('employer')
-# def edit_internship(internship_id):
-#     cursor, db = getCursor()
-    
-#     # Verify internship belongs to current employer
-#     cursor.execute("SELECT emp_id FROM employer WHERE user_id = %s", (session['user_id'],))
-#     emp_row = cursor.fetchone()
-#     if not emp_row:
-#         flash("Employer profile not found.")
-#         return redirect(url_for('employer_dashboard'))
-    
-#     emp_id = emp_row[0]
-    
-#     cursor.execute("SELECT * FROM internship WHERE internship_id = %s AND company_id = %s", (internship_id, emp_id))
-#     internship = cursor.fetchone()
-#     if not internship:
-#         flash("Internship not found or unauthorized access.")
-#         return redirect(url_for('employer_dashboard'))
-    
-#     if request.method == 'POST':
-#         title = request.form['title']
-#         description = request.form['description']
-#         requirements = request.form['requirements']
-#         location = request.form['location']
-#         duration = request.form['duration']
-#         stipend = request.form.get('stipend', 0)
-#         status = request.form['status']
-        
-#         cursor.execute("""
-#             UPDATE internship 
-#             SET title=%s, description=%s, requirements=%s, location=%s, 
-#                 duration=%s, stipend=%s, status=%s
-#             WHERE internship_id=%s
-#         """, (title, description, requirements, location, duration, stipend, status, internship_id))
-#         db.commit()
-        
-#         flash("Internship updated successfully!")
-#         return redirect(url_for('employer_dashboard'))
-    
-#     return render_template('edit_internship.html', internship=internship)
-
-
-
-
-
 
 # ========== ADMIN ROUTES ===============================================================================
 
+
+    # Admin dashboard - no specific task - showing all counts of users, etc (6th commit)
 @app.route('/admin')
 @login_required('admin')
 def admin_dashboard():
+    """
+        List Count of Users,students,employers, applications, internship
+        Buttons to navigate
+    """
     cursor,db = getCursor()
 
     # Stats
@@ -761,17 +808,32 @@ def admin_dashboard():
                            total_applications=total_applications)
 
 
-    #Internship Application - Browse Internship Admin
+    #2.a Internship Application - Browse Internship Admin (2nd commit)
 @app.route('/admin/internships')
 @login_required('admin')
 def admin_browse_internships():
+    """
+        View all internship and filter them based on title,duration , location
+    """
     internships, filters = get_filtered_internships()
     return render_template('view_internships.html', internships=internships, filters=filters, role='admin')
 
-    #User Management - View User
+    #5.a User Management - View User (6th commit)
 @app.route('/admin/users', methods=['GET', 'POST'])
 @login_required('admin')
 def manage_users():
+    """
+    Admin dashboard route to manage user accounts.
+
+    Retrieves a filtered list of users (students and employers) based on query parameters:
+    - uname: partial or full match for username
+    - fname: partial match for first name (starts with)
+    - lname: partial match for last name (ends with)
+    - role: exact match for user role ('student', 'employer', etc.)
+    - status: exact match for account status ('active', 'inactive')
+
+    The resulting list is displayed in the `manage_users.html` template.
+    """
     cursor, db = getCursor()
 
     # Get filter values from query parameters
@@ -792,10 +854,10 @@ def manage_users():
         params.append(f"%{uname}%")
     if fname:
         query += " AND first_name LIKE %s"
-        params.append(f"%{fname}%")
+        params.append(f"{fname}%")
     if lname:
         query += " AND last_name LIKE %s"
-        params.append(f"%{lname}%")
+        params.append(f"%{lname}")
     if role:
         query += " AND role = %s"
         params.append(role)
@@ -811,10 +873,20 @@ def manage_users():
     return render_template('manage_users.html', users=users,
                            filters={'uname':uname,'fname': fname, 'lname': lname, 'role': role, 'status': status})
 
-    # Internship Application - Admin - View Status
+    #2.c Internship Application - Admin - View Status (2nd commit / 7th commit)
 @app.route('/admin/applications', methods=['GET'])
 @login_required('admin')
 def view_all_applications():
+    '''    Admin route to view all internship applications.
+
+    Supports filtering by:
+    - student_name: partial match for student full name
+    - title: partial match for internship title
+    - status: exact match of application status ('Pending', 'Accepted', 'Rejected')
+
+    Displays student details, internship info, application status, and optional feedback.
+    Data is passed to `admin_applications.html` template for rendering.
+    '''
     cursor, db = getCursor()
 
     # Filters
@@ -824,7 +896,7 @@ def view_all_applications():
 
     query = """
         SELECT a.student_id, a.internship_id, a.status, a.application_date,
-               u.full_name, u.email, i.title, i.location
+               u.full_name, u.email, i.title, i.location , a.feedback
         FROM application a
         JOIN student s ON a.student_id = s.student_id
         JOIN user u ON s.user_id = u.user_id
@@ -858,10 +930,17 @@ def view_all_applications():
 
 
 
-    #User Management - Change user status
+    #5.b User Management - Change user status (7th commit)
 @app.route('/admin/users/toggle/<int:user_id>')
 @login_required('admin')
 def toggle_user_status(user_id):
+    """
+    Toggle the status of a user between 'active' and 'inactive'.
+    Args:
+        user_id (int): The ID of the user whose status is to be toggled.
+    This route is restricted to admin users. After updating the status,
+    it redirects back to the user management page.
+    """
     cursor, db = getCursor()
 
     # Get current status
@@ -878,10 +957,11 @@ def toggle_user_status(user_id):
     return redirect(url_for('manage_users'))
 
 
-    # User Management - View user - other's profile
+    # 5.a- User Management - View user - other's profile (7th commit)
 @app.route('/admin/view_user/<int:user_id>')
 @login_required('admin')
 def view_user_profile(user_id):
+    """ Admin can view all users profile"""
     cursor, db = getCursor()
 
     # Get user basic info
@@ -929,7 +1009,11 @@ def view_user_profile(user_id):
 
 
 # ============= Profile management =========================================================
+    #4.a - Profile management (8th commit)
 def get_user_profile(user_id, role):
+    """
+        Profile Helper Function for all users in edit
+    """
     cursor, db = getCursor()
 
     cursor.execute("""
@@ -975,10 +1059,13 @@ def get_user_profile(user_id, role):
 
     return profile
 
-
+    #4.a - Profile same for all user with add info 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required()  # or use your own role-based decorator
 def profile():
+    """
+        View Profile with all info and an edit button
+    """
     cursor, db = getCursor()
     user_id = session['user_id']
     role = session['role']
@@ -1066,10 +1153,14 @@ def profile():
 
     return render_template('profile.html', profile=profile_data, role=role)
 
-
+    #4.a,b,c - edit profile
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required()
 def edit_profile():
+    """
+        Editing profile
+            - Can edit all specified fields mentioned according to table 
+    """
     cursor, db = getCursor()
     user_id = session['user_id']
     role = session['role']
@@ -1121,6 +1212,13 @@ def edit_profile():
                 
             if new_pw != confirm_pw:
                 flash("Passwords do not match.")
+                return redirect(url_for('edit_profile'))
+            # Fetch current password hash
+            cursor.execute("SELECT password_hash FROM user WHERE user_id = %s", (user_id,))
+            current_hash = cursor.fetchone()[0]
+
+            if bcrypt.check_password_hash(current_hash, new_pw):
+                flash("New password must be different from the current password.")
                 return redirect(url_for('edit_profile'))
             hashed_pw = bcrypt.generate_password_hash(new_pw).decode('utf-8')
             cursor.execute("UPDATE user SET password_hash=%s WHERE user_id=%s", (hashed_pw, user_id))
@@ -1175,17 +1273,23 @@ def edit_profile():
 
 
 
-# ========== ERROR HANDLERS ==========
+# ========== ERROR HANDLERS ===================================
+
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
 
 @app.errorhandler(404)
 def not_found_error(error):
+    """Page not found html"""
     return render_template('404.html'), 404
 
 @app.errorhandler(500)
 def internal_error(error):
+    """Server Error helper page"""
     return render_template('500.html'), 500
 
-# ========== UTILITY ROUTES ==========
+# ========== UTILITY ROUTES ========== During initial part
 
 @app.route('/download/resume/<filename>')
 @login_required()
@@ -1200,6 +1304,10 @@ def download_resume(filename):
     except FileNotFoundError:
         flash("Resume file not found.")
         return redirect(request.referrer or url_for('index'))
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

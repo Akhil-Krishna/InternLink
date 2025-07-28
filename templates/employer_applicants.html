@@ -5,10 +5,13 @@
 
   <!-- Search Filters (by full name and status) -->
   <form method="get" class="row g-3 mb-3">
-    <div class="col-md-5">
+    <div class="col-md-3">
       <input type="text" name="name" class="form-control" placeholder="Search by Name" value="{{ request.args.name }}">
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
+      <input type="text" name="title" class="form-control" placeholder="Search by Title" value="{{ internship[2] }}" disabled>
+    </div>
+    <div class="col-md-3">
       <select name="status" class="form-select">
         <option value="">All Statuses</option>
         <option value="Pending" {% if request.args.status == 'Pending' %}selected{% endif %}>Pending</option>
@@ -65,7 +68,7 @@
               </select>
               <!-- Button to open modal -->
               <button type="button" class="btn btn-sm btn-outline-primary mb-1" data-bs-toggle="modal" data-bs-target="#feedbackModal{{ loop.index }}">
-                Feedback
+                Add Feedback
               </button>
               <button type="submit" class="btn btn-sm btn-success">Update</button>
 

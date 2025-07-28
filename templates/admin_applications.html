@@ -35,6 +35,7 @@
                     <th>Location</th>
                     <th>Status</th>
                     <th>Applied On</th>
+                    <th>Reason</th>
                     <th>Action</th>
                     <th>Update</th>
                 </tr>
@@ -55,6 +56,33 @@
                         </span>
                     </td>
                     <td>{{ app[3].strftime('%Y-%m-%d') }}</td>
+                    <td class="text-center">
+                        {% if app[8] %}
+                        <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#reasonModal{{ app[0] }}_{{ app[1] }}">
+                            View
+                        </button>
+
+                        <!-- Feedback Modal -->
+                        <div class="modal fade" id="reasonModal{{ app[0] }}_{{ app[1] }}" tabindex="-1"
+                            aria-labelledby="reasonLabel{{ app[0] }}_{{ app[1] }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="reasonLabel{{ app[0] }}_{{ app[1] }}">Application Feedback</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="text-wrap">{{ app[8] }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <span class="text-muted">N/A</span>
+                        {% endif %}
+                    </td>
+
                     <td class="text-center">
                         <a href="{{ url_for('view_application_details', student_id=app[0], internship_id=app[1]) }}"
                            class="btn btn-sm btn-outline-info">Full Details</a>
@@ -89,7 +117,7 @@
                                             <div class="mb-3">
                                                 <label for="feedback" class="form-label">Feedback (optional)</label>
                                                 <textarea name="feedback" rows="3" class="form-control"
-                                                          placeholder="Provide reason if accepted or rejected..."></textarea>
+                                                          placeholder="Provide reason if accepted or rejected...">{{app[8]}}</textarea>
                                             </div>
                                         </div>
                                         <div class="modal-footer">

@@ -1,22 +1,135 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center text-center">
-    <div class="col-md-8">
-      <h1 class="display-4 mb-3">Welcome to InternLink</h1>
-      <p class="lead mb-4">A smart internship management portal for students, employers, and administrators.</p>
 
-      {% if 'user_id' not in session %}
-        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-          <a class="btn btn-primary btn-lg me-md-2" href="{{ url_for('login') }}">Login</a>
-          <a class="btn btn-outline-secondary btn-lg" href="{{ url_for('register') }}">Register as Student</a>
-        </div>
-      {% else %}
-        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-          <a class="btn btn-success btn-lg" href="{{ url_for(session.role + '_dashboard') }}">Go to Dashboard</a>
-        </div>
-      {% endif %}
+<!-- Hero Section -->
+<div class="container-fluid bg-light py-5">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-12 col-lg-8">
+        <h1 class="display-4 fw-bold text-secondary mb-3">Welcome to InternLink</h1>
+        <p class="lead text-muted mb-4">
+          A comprehensive internship management portal connecting students, employers, and administrators in one seamless platform.
+        </p>
+
+        {% if 'user_id' not in session %}
+          <div class="d-grid d-sm-flex gap-3 justify-content-center">
+            <a class="btn btn-primary btn-lg px-4" href="{{ url_for('login') }}">
+              <i class="fa fa-sign-in me-2"></i>Login
+            </a>
+            <a class="btn btn-outline-primary btn-lg px-4" href="{{ url_for('register') }}">
+              <i class="fa fa-user-plus me-2"></i>Register as Student
+            </a>
+          </div>
+        {% else %}
+          <div class="alert alert-success d-inline-block mb-4">
+            <i class="fa fa-user me-2"></i>Welcome back, <strong>{{ session.username }}</strong>!
+          </div>
+          <div class="d-grid d-sm-flex gap-3 justify-content-center">
+            <a class="btn btn-success btn-lg px-4" href="{{ url_for(session.role + '_dashboard') }}">
+              <i class="fa fa-tachometer-alt me-2"></i>Go to Dashboard
+            </a>
+            <a class="btn btn-outline-secondary btn-lg px-4" href="{{ url_for('logout') }}">
+              <i class="fa fa-sign-out me-2"></i>Logout
+            </a>
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Features Section -->
+<div class="container py-5">
+  <div class="row text-center mb-5">
+    <div class="col-12">
+      <h2 class="mb-3">How InternLink Works</h2>
+      <p class="text-muted">Three simple steps to connect talent with opportunity</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- For Students -->
+    <div class="col-12 col-md-4">
+      <div class="card border-0 shadow-sm h-100 text-center">
+        <div class="card-body py-5">
+          <div class="mb-4">
+            <i class="fa fa-graduation-cap text-primary" style="font-size: 3rem;"></i>
+          </div>
+          <h4 class="card-title mb-3">For Students</h4>
+          <p class="card-text text-muted">
+            Browse internships, apply with your resume, and track your application status in real-time.
+          </p>
+          <ul class="list-unstyled text-start mt-3">
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>Browse available internships</li>
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>Submit applications easily</li>
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>Track application progress</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- For Employers -->
+    <div class="col-12 col-md-4">
+      <div class="card border-0 shadow-sm h-100 text-center">
+        <div class="card-body py-5">
+          <div class="mb-4">
+            <i class="fa fa-building text-success" style="font-size: 3rem;"></i>
+          </div>
+          <h4 class="card-title mb-3">For Employers</h4>
+          <p class="card-text text-muted">
+            Post internship opportunities and manage applications from qualified candidates.
+          </p>
+          <ul class="list-unstyled text-start mt-3">
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>Post internship openings</li>
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>Review student applications</li>
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>Manage hiring process</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- For Administrators -->
+    <div class="col-12 col-md-4">
+      <div class="card border-0 shadow-sm h-100 text-center">
+        <div class="card-body py-5">
+          <div class="mb-4">
+            <i class="fa fa-cogs text-info" style="font-size: 3rem;"></i>
+          </div>
+          <h4 class="card-title mb-3">For Administrators</h4>
+          <p class="card-text text-muted">
+            Oversee the entire platform with comprehensive management and monitoring tools.
+          </p>
+          <ul class="list-unstyled text-start mt-3">
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>Manage all users</li>
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>Monitor applications</li>
+            <li class="mb-2"><i class="fa fa-check text-success me-2"></i>View platform statistics</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Call to Action -->
+{% if 'user_id' not in session %}
+<div class="container-fluid bg-secondary text-white py-5">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-12 col-lg-8">
+        <h3 class="mb-3">Ready to Get Started?</h3>
+        <p class="mb-4">Join thousands of students and employers already using InternLink to build successful careers.</p>
+        <div class="d-grid d-sm-flex gap-3 justify-content-center">
+          <a class="btn btn-light btn-lg px-4" href="{{ url_for('register') }}">
+            <i class="fa fa-rocket me-2"></i>Start Your Journey
+          </a>
+          <a class="btn btn-outline-light btn-lg px-4" href="{{ url_for('login') }}">
+            <i class="fa fa-sign-in me-2"></i>Already Have Account?
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}

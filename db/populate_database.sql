@@ -23,7 +23,9 @@ INSERT INTO user (username, full_name,first_name,last_name, email, password_hash
 ('isabella.clark', 'Isabella Clark','Isabella','Clark', 'isabella.clark@student.uni.nz', '$2b$12$n6MTBgQTth6ydw2BCV9dXu37f08GoXY2lokol/pPRZ8dfBgXXI7su', 'isabella_clark.jpg', 'student', 'active'),
 ('noah.walker', 'Noah Walker','Noah','Walker', 'noah.walker@student.uni.nz', '$2b$12$mwam7B8dGMhAze8FtlVOt.xfyEisFD8nvgY5XWchpLB4fF4ufSTtG', 'noah_walker.jpg', 'student', 'active'),
 ('zoe.allen', 'Zoe Allen','Zoe','Allen' ,'zoe.allen@student.uni.nz', '$2b$12$C10BCYsz3wQkt7epF.uvBe3VJ4I0Df1eEn6.m8bkbMn/A0ZO3sg5q', 'zoe_allen.jpg', 'student', 'active'),
+('akhil.krishna','Akhil Krishna','Akhil','Krishna','akhil03@gmail.com','$2b$12$txj6UJoi75Lfy/GksWzqc.jfYYcQi.GIXzBE7/1942OcQUDakZjfK','akhil.krishna_pic_hero.jpg','student','active'),
 ('jacob.hill', 'Jacob Hill','Jacob','Hill', 'jacob.hill@student.uni.nz', '$2b$12$CEdQuD1ixzm9qX/TpFtpJONFzdN9gzKoqb5l1jj71a4VWrQre871i', 'jacob_hill.jpg', 'student', 'active');
+
 
 -- EMPLOYERS (5 employers)
 INSERT INTO user (username, full_name,first_name,last_name, email, password_hash, profile_image, role, status) VALUES
@@ -60,7 +62,8 @@ INSERT INTO student (user_id, university, course, resume_path) VALUES
 (17, 'Auckland University of Technology', 'Information Systems', 'isabella_clark_resume.pdf'),
 (18, 'University of Canterbury', 'Computer Science', 'noah_walker_resume.pdf'),
 (19, 'Massey University', 'Information Technology', 'zoe_allen_resume.pdf'),
-(20, 'University of Otago', 'Data Science', 'jacob_hill_resume.pdf');
+(20, 'APJS','CSE','akhil.krishna_resume_resume.pdf'),
+(21, 'University of Otago', 'Data Science', 'jacob_hill_resume.pdf');
 
 -- Insert Employer details
 INSERT INTO employer (user_id, company_name, company_description, website, logo_path) VALUES

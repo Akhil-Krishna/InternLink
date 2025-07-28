@@ -1,6 +1,178 @@
-<!-- templates/student_dashboard.html -->
 {% extends 'base.html' %}
 {% block content %}
-<h2>Welcome to your Student Dashboard!</h2>
-<p>This is a placeholder. Internships will be shown here.</p>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-11">
+      
+      <!-- Welcome Header -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card bg-secondary text-white border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div class="row align-items-center">
+                <div class="col-12 col-md-8">
+                  <h2 class="h3 mb-2 fw-bold">Welcome back, {{ session.username }}!</h2>
+                  <p class="mb-0 opacity-75">Ready to find your next internship opportunity? Explore available positions and track your applications.</p>
+                </div>
+                <div class="col-12 col-md-4 text-center text-md-end mt-3 mt-md-0">
+                  <i class="bi bi-person-workspace display-4 opacity-50"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <h4 class="mb-3 text-secondary">Quick Actions</h4>
+        </div>
+        
+        <!-- Browse Internships Card -->
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4 text-center">
+              <div class="mb-3">
+                <div class="bg-success rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                  <i class="fas fa-search me-1 text-white"></i>
+                </div>
+              </div>
+              <h5 class="card-title mb-2">Browse Internships</h5>
+              <p class="card-text text-muted mb-3">Discover available internship opportunities from top companies.</p>
+              <a href="{{ url_for('student_browse_internships') }}" class="btn btn-success">
+                <i class="bi bi-arrow-right me-1"></i>Explore Now
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Applications Card -->
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4 text-center">
+              <div class="mb-3">
+                <div class="bg-info rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                  <i class="fas fa-file-alt me-1 text-white"></i>
+                </div>
+              </div>
+              <h5 class="card-title mb-2">My Applications</h5>
+              <p class="card-text text-muted mb-3">Track the status of your internship applications and feedback.</p>
+              <a href="{{ url_for('track_applications') }}" class="btn btn-info">
+                <i class="bi bi-arrow-right me-1"></i>View Status
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-4 text-center">
+              <div class="mb-3">
+                <div class="bg-warning rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                  <i class="fas fa-user me-1 text-white"></i>
+                </div>
+              </div>
+              <h5 class="card-title mb-2">My Profile</h5>
+              <p class="card-text text-muted mb-3">Update your personal information, resume, and academic details.</p>
+              <a href="{{ url_for('profile') }}" class="btn btn-warning">
+                <i class="bi bi-arrow-right me-1"></i>View Profile
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips Section -->
+      <div class="row">
+        <div class="col-12 col-lg-8 mb-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light py-3">
+              <h5 class="card-title mb-0">
+                <i class="bi bi-lightbulb me-2 text-primary"></i>Application Tips
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px; min-width: 30px;">
+                      <span class="text-white fw-bold small">1</span>
+                    </div>
+                    <div>
+                      <h6 class="mb-1">Complete Your Profile</h6>
+                      <small class="text-muted">Make sure your profile has all required information and an updated resume.</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px; min-width: 30px;">
+                      <span class="text-white fw-bold small">2</span>
+                    </div>
+                    <div>
+                      <h6 class="mb-1">Tailor Your Applications</h6>
+                      <small class="text-muted">Write personalized cover letters that match the internship requirements.</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-info rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px; min-width: 30px;">
+                      <span class="text-white fw-bold small">3</span>
+                    </div>
+                    <div>
+                      <h6 class="mb-1">Apply Early</h6>
+                      <small class="text-muted">Don't wait until the deadline. Early applications often get more attention.</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="d-flex align-items-start">
+                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 30px; height: 30px; min-width: 30px;">
+                      <span class="text-white fw-bold small">4</span>
+                    </div>
+                    <div>
+                      <h6 class="mb-1">Follow Up</h6>
+                      <small class="text-muted">Check your application status regularly and respond promptly to employer feedback.</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="col-12 col-lg-4 mb-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-light py-3">
+              <h5 class="card-title mb-0">
+                <i class="bi bi-graph-up me-2 text-success"></i>Your Progress
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="text-center">
+                <div class="mb-3">
+                  <div class="bg-primary-subtle rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                    <i class="fas fa-line-chart fa-2x text-white me-1"></i>
+                  </div>
+                </div>
+                <h4 class="text-primary mb-2">Get Started!</h4>
+                <p class="text-muted mb-3">Complete your profile and start applying to internships to see your progress here.</p>
+                <div class="d-grid">
+                  <a href="{{ url_for('student_browse_internships') }}" class="btn btn-outline-dark">
+                    <i class="bi bi-rocket-takeoff me-1"></i>Start Applying
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 {% endblock %}

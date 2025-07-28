@@ -2,86 +2,194 @@
 {% block title %}Apply for Internship{% endblock %}
 {% block content %}
 
-<div class="container py-4">
-    <h3 class="mb-4 text-center">Apply to: <span class="text-primary">{{ internship[2] }}</span></h3>
-
-    <div class="row">
-        <!-- Company Info Card -->
-        <!-- Company Info Card -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body d-flex flex-column flex-md-row align-items-center">
-                <!-- Logo -->
-                <div class="me-md-4 mb-3 mb-md-0 text-center">
-                    <img src="{{ url_for('static', filename='uploads/images/' + (internship[15] if internship[15] else 'default_company_logo.png')) }}"
-                        alt="Company Logo" class="img-fluid" style="max-height: 100px;">
-                </div>
-
-                <!-- Company Info -->
-                <div class="flex-fill">
-                    <h4 class="card-title mb-2">{{ internship[12] }}</h4> <!-- company_name -->
-                    <p class="mb-1"><strong>Website:</strong>
-                        <a href="{{ internship[13] }}" target="_blank">{{ internship[13] }}</a>
-                    </p>
-                    <p class="mb-0"><strong>Description:</strong> {{ internship[14] or 'No description available.' }}</p>
-                </div>
-            </div>
+<div class="container-fluid px-3 px-md-4 py-4">
+    <!-- Header -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-lg-10">
+            <h2 class="text-center mb-3">Apply for Internship</h2>
+            <h4 class="text-center text-primary fw-bold">{{ internship[2] }}</h4>
         </div>
+    </div>
 
-
-        <!-- Internship Info -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            
+            <!-- Company Info Card -->
+            <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Internship Details</h5>
-                    <p><strong>Title:</strong> {{ internship[2] }}</p>
-                    <p><strong>Description:</strong> {{ internship[3] }}</p>
-                    <p><strong>Location:</strong> {{ internship[4] }}</p>
-                    <p><strong>Duration:</strong> {{ internship[5] }}</p>
-                    <p><strong>Skills Required:</strong> {{ internship[6] or 'Not specified' }}</p>
-                    <p><strong>Deadline:</strong> {{ internship[7].strftime('%Y-%m-%d') }}</p>
-                    <p><strong>Stipend:</strong> {{ internship[8] or 'Unpaid' }}</p>
-                    <p><strong>Openings:</strong> {{ internship[9] }}</p>
-                    <p><strong>Additional Requirements:</strong> {{ internship[10] or 'None' }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Application Form -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                        <h5 class="mb-3 text-center">Application</h5>
-                        <div class="mb-2"><strong>Name:</strong> {{ student[0] }}</div>
-                        <div class="mb-2"><strong>Email:</strong> {{ student[1] }}</div>
-                        <div class="mb-2"><strong>University:</strong> {{ student[2] }}</div>
-                        <div class="mb-3"><strong>Course:</strong> {{ student[3] }}</div>
-
-                        <hr>
+                    <div class="row align-items-center">
+                        <!-- Logo -->
+                        <div class="col-12 col-md-3 text-center mb-3 mb-md-0">
+                            <img src="{{ url_for('static', filename='uploads/images/' + (internship[15] if internship[15] else 'default_company_logo.png')) }}"
+                                alt="Company Logo" class="img-fluid rounded" style="max-height: 80px; max-width: 100%;">
+                        </div>
                         
-
-                        <div class="mb-3">
-                            <label for="cover_letter" class="form-label">Cover Letter</label>
-                            <textarea name="cover_letter" class="form-control" rows="5" required></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="resume" class="form-label">Upload Resume (PDF)</label>
-                            {% if existing_resume %}
-                                <div class="mb-2">
-                                    <strong>Current Resume:</strong>
-                                    <a href="{{ url_for('static', filename='uploads/resumes/' + existing_resume) }}"
-                                       target="_blank" class="btn btn-sm btn-outline-secondary ms-2">View</a>
+                        <!-- Company Info -->
+                        <div class="col-12 col-md-9">
+                            <h4 class="card-title mb-2 text-md-start text-center">{{ internship[12] }}</h4>
+                            <div class="row">
+                                <div class="col-12 col-sm-6 mb-2">
+                                    <strong>Website:</strong>
+                                    <a href="{{ internship[13] }}" target="_blank" class="text-decoration-none">
+                                        {{ internship[13] }}
+                                    </a>
                                 </div>
-                            {% endif %}
-                            <input type="file" name="resume" accept=".pdf" class="form-control">
-                            <small class="text-muted">Uploading a new file will replace the existing one.</small>
+                                <div class="col-12">
+                                    <strong>Description:</strong> 
+                                    <span class="text-muted">{{ internship[14] or 'No description available.' }}</span>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success">Submit Application</button>
+            <!-- Main Content Row -->
+            <div class="row g-4">
+                
+                <!-- Internship Details -->
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0 text-center">Internship Details</h5>
                         </div>
-                    </form>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="border-start border-primary border-3 ps-3">
+                                        <strong class="text-primary">Title:</strong>
+                                        <p class="mb-2">{{ internship[2] }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <strong>Description:</strong>
+                                    <p class="text-muted mb-2">{{ internship[3] }}</p>
+                                </div>
+
+                                <div class="col-12 col-sm-6">
+                                    <strong>Location:</strong>
+                                    <p class="mb-2">{{ internship[4] }}</p>
+                                </div>
+
+                                <div class="col-12 col-sm-6">
+                                    <strong>Duration:</strong>
+                                    <p class="mb-2">{{ internship[5] }}</p>
+                                </div>
+
+                                <div class="col-12">
+                                    <strong>Skills Required:</strong>
+                                    <p class="mb-2">
+                                        {% if internship[6] %}
+                                            <span class="badge bg-secondary me-1">{{ internship[6] }}</span>
+                                        {% else %}
+                                            <span class="text-muted">Not specified</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                <div class="col-12 col-sm-6">
+                                    <strong>Deadline:</strong>
+                                    <p class="mb-2 text-danger">{{ internship[7].strftime('%Y-%m-%d') }}</p>
+                                </div>
+
+                                <div class="col-12 col-sm-6">
+                                    <strong>Stipend:</strong>
+                                    <p class="mb-2 text-success">{{ internship[8] or 'Unpaid' }}</p>
+                                </div>
+
+                                <div class="col-12 col-sm-6">
+                                    <strong>Openings:</strong>
+                                    <p class="mb-2">{{ internship[9] }}</p>
+                                </div>
+
+                                <div class="col-12">
+                                    <strong>Additional Requirements:</strong>
+                                    <p class="mb-0 text-muted">{{ internship[10] or 'None' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Application Form -->
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0 text-center">Submit Application</h5>
+                        </div>
+                        <div class="card-body">
+                            
+                            <!-- Student Info -->
+                            <div class="bg-light rounded p-3 mb-4">
+                                <h6 class="mb-3 text-primary">Your Information</h6>
+                                <div class="row g-2">
+                                    <div class="col-12 col-sm-6">
+                                        <small class="text-muted">Name:</small>
+                                        <div class="fw-semibold">{{ student[0] }}</div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <small class="text-muted">Email:</small>
+                                        <div class="fw-semibold">{{ student[1] }}</div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <small class="text-muted">University:</small>
+                                        <div class="fw-semibold">{{ student[2] }}</div>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <small class="text-muted">Course:</small>
+                                        <div class="fw-semibold">{{ student[3] }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Application Form -->
+                            <form method="post" enctype="multipart/form-data">
+                                <div class="mb-4">
+                                    <label for="cover_letter" class="form-label fw-semibold">
+                                        Cover Letter <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea name="cover_letter" id="cover_letter" class="form-control" 
+                                              rows="4" required placeholder="Write your cover letter here..."></textarea>
+                                    <div class="form-text">Explain why you're interested in this internship.</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="resume" class="form-label fw-semibold">Resume (PDF)</label>
+                                    
+                                    {% if existing_resume %}
+                                        <div class="border rounded p-3 mb-2 bg-light">
+                                            <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                                <span class="me-2">
+                                                    <i class="fa fa-file-pdf-o text-danger"></i>
+                                                    Current Resume: <strong>{{ existing_resume }}</strong>
+                                                </span>
+                                                <a href="{{ url_for('static', filename='uploads/resumes/' + existing_resume) }}"
+                                                   target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fa fa-eye"></i> View Resume
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <input type="file" name="resume" id="resume" accept=".pdf" class="form-control">
+                                    <div class="form-text">
+                                        {% if existing_resume %}
+                                            Upload a new file to replace the existing resume.
+                                        {% else %}
+                                            Please upload your resume in PDF format.
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        Submit Application
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
