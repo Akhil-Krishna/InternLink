@@ -181,7 +181,7 @@ The database population script creates sample accounts for testing:
 - Username: `green.energy` - Daniel Williams from Green Energy Corp - Password : Gr33nEn3rgy%
 - Username: `media.creative` - Sophie Brown from Creative Media Hub - Password : M3d1@Cr3@t1v3^
 
-**Administrators** (Password: `admin123` for all):
+**Administrators** :
 - Username: `admin.system` - Aravind S (System Administrator) - Password : Adm1nSyst3m*
 - Username: `admin.support` - Angel Thomas (Support Administrator) - Password : Adm1nSupp0rt&
 
