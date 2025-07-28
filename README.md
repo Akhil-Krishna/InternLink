@@ -167,23 +167,23 @@ InternLink/
 
 The database population script creates sample accounts for testing:
 
-**Students** (Password: `student123` for all):
-- Username: `sarah.chen` - Computer Science student from University of Auckland
-- Username: `james.wilson` - Software Engineering student from Victoria University
-- Username: `emily.martinez` - Information Systems student from University of Canterbury
-- Username: `alex.thompson` - Data Science student from Massey University
-- Username: `akhil.krishna` - CSE student from APJS
+**Students** :
+- Username: `sarah.chen` - Computer Science student from University of Auckland - Password : S@rahCh3n2025!
+- Username: `james.wilson` - Software Engineering student from Victoria University - Password : J@mesW1ls0n#
+- Username: `emily.martinez` - Information Systems student from University of Canterbury - Password : Em1lyM@rt1nez$
+- Username: `alex.thompson` - Data Science student from Massey University - Password : Al3xTh0mps0n%
+- Username: `akhil.krishna` - CSE student from APJS - Password : Akhil@1234
 
-**Employers** (Password: `employer123` for all):
-- Username: `techcorp.hr` - Jessica Martinez from TechCorp Solutions
-- Username: `innovate.recruit` - Mark Thompson from Innovate Solutions
-- Username: `fintech.careers` - Rachel Chen from FinTech Plus
-- Username: `green.energy` - Daniel Williams from Green Energy Corp
-- Username: `media.creative` - Sophie Brown from Creative Media Hub
+**Employers** :
+- Username: `techcorp.hr` - Jessica Martinez from TechCorp Solutions - Password : T3chC0rpHR2025!
+- Username: `innovate.recruit` - Mark Thompson from Innovate Solutions - Password : 1nn0v@t3R3crU1t#
+- Username: `fintech.careers` - Rachel Chen from FinTech Plus - Password : F1nt3chC@r33rs$
+- Username: `green.energy` - Daniel Williams from Green Energy Corp - Password : Gr33nEn3rgy%
+- Username: `media.creative` - Sophie Brown from Creative Media Hub - Password : M3d1@Cr3@t1v3^
 
 **Administrators** (Password: `admin123` for all):
-- Username: `admin.system` - Aravind S (System Administrator)
-- Username: `admin.support` - Angel Thomas (Support Administrator)
+- Username: `admin.system` - Aravind S (System Administrator) - Password : Adm1nSyst3m*
+- Username: `admin.support` - Angel Thomas (Support Administrator) - Password : Adm1nSupp0rt&
 
 ### Key Workflows
 
