@@ -96,15 +96,14 @@ pip install -r requirements.txt
 import mysql.connector
 
 def getCursor():
-    connection = mysql.connector.connect(
-        host='localhost',
-        user='ur_mysql_username(root)',
-        password='password',
-        database='internlink',
-        autocommit=True
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="password",
+        database="internlink"
     )
-    cursor = connection.cursor()
-    return cursor, connection
+    return db.cursor(buffered=True), db
+
 ```
 
 ### Step 6: Create Upload Directories
