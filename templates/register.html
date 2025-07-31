@@ -1,109 +1,82 @@
 <!-- templates/register.html -->
 {% extends 'base.html' %}
 
-
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white text-center">
-                <h3 class="mb-0">
-                    <i class="fas fa-user-plus me-2"></i>Student Registration
-                </h3>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="text-center mb-4">
+                <h2 class="fw-normal text-dark">Student Registration</h2>
+                <p class="text-muted">Create your account to get started</p>
             </div>
-            <div class="card-body p-4">
+            
+            <div class="bg-white p-4 rounded border">
                 <form method="POST" enctype="multipart/form-data" novalidate>
-                    <!-- Personal Information Section -->
+                    <!-- Personal Information -->
                     <div class="mb-4">
-                        <h5 class="text-muted mb-3">
-                            <i class="fas fa-user me-2"></i>Personal Information
-                        </h5>
+                        <h5 class="text-muted mb-3 fw-normal">Personal Information</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <label for="first_name" class="form-label text-dark">First Name <span class="text-danger">*</span></label>
                                 <input type="text" name="first_name" id="first_name" class="form-control" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <label for="last_name" class="form-label text-dark">Last Name <span class="text-danger">*</span></label>
                                 <input type="text" name="last_name" id="last_name" class="form-control" required>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                <input type="email" name="email" id="email" class="form-control" required>
-                            </div>
+                            <label for="email" class="form-label text-dark">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="email" id="email" class="form-control" required>
                         </div>
                     </div>
 
-                    <!-- Account Information Section -->
+                    <!-- Account Information -->
                     <div class="mb-4">
-                        <h5 class="text-muted mb-3">
-                            <i class="fas fa-key me-2"></i>Account Information
-                        </h5>
+                        <h5 class="text-muted mb-3 fw-normal">Account Information</h5>
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                <input type="text" name="username" id="username" class="form-control" required>
-                            </div>
+                            <label for="username" class="form-label text-dark">Username <span class="text-danger">*</span></label>
+                            <input type="text" name="username" id="username" class="form-control" required>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    <input type="password" name="password" id="password" class="form-control" required>
-                                </div>
+                                <label for="password" class="form-label text-dark">Password <span class="text-danger">*</span></label>
+                                <input type="password" name="password" id="password" class="form-control" required>
                                 <div class="form-text">Must be at least 8 characters with letters and numbers</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="confirm" class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    <input type="password" name="confirm" id="confirm" class="form-control" required>
-                                </div>
+                                <label for="confirm" class="form-label text-dark">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password" name="confirm" id="confirm" class="form-control" required>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Academic Information Section -->
+                    <!-- Academic Information -->
                     <div class="mb-4">
-                        <h5 class="text-muted mb-3">
-                            <i class="fas fa-graduation-cap me-2"></i>Academic Information
-                        </h5>
+                        <h5 class="text-muted mb-3 fw-normal">Academic Information</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="university" class="form-label">University<span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-university"></i></span>
-                                    <input type="text" name="university" id="university" class="form-control" required>
-                                </div>
+                                <label for="university" class="form-label text-dark">University <span class="text-danger">*</span></label>
+                                <input type="text" name="university" id="university" class="form-control" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="course" class="form-label">Course/Major<span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-book"></i></span>
-                                    <input type="text" name="course" id="course" class="form-control" required>
-                                </div>
+                                <label for="course" class="form-label text-dark">Course/Major <span class="text-danger">*</span></label>
+                                <input type="text" name="course" id="course" class="form-control" required>
                             </div>
                         </div>
                     </div>
 
-                    <!-- File Uploads Section -->
+                    <!-- File Uploads -->
                     <div class="mb-4">
-                        <h5 class="text-muted mb-3">
-                            <i class="fas fa-upload me-2"></i>Documents
-                        </h5>
+                        <h5 class="text-muted mb-3 fw-normal">Documents</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="profile_pic" class="form-label">Profile Picture</label>
+                                <label for="profile_pic" class="form-label text-dark">Profile Picture</label>
                                 <input type="file" name="profile_pic" id="profile_pic" class="form-control" accept="image/*">
                                 <div class="form-text">Supported formats: PNG, JPG, JPEG, GIF</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="resume" class="form-label">Resume</label>
+                                <label for="resume" class="form-label text-dark">Resume</label>
                                 <input type="file" name="resume" id="resume" class="form-control" accept=".pdf">
                                 <div class="form-text">PDF format only</div>
                             </div>
@@ -111,25 +84,18 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>Create Account
-                        </button>
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
                     </div>
 
                     <!-- Login Link -->
-                    <div class="text-center mt-3">
-                        <small class="text-muted">
-                            Already have an account? 
-                            <a href="{{ url_for('login') }}" class="text-decoration-none">Sign in here</a>
-                        </small>
+                    <div class="text-center">
+                        <span class="text-muted">Already have an account? </span>
+                        <a href="{{ url_for('login') }}" class="text-decoration-none">Sign in here</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Add some spacing at bottom -->
-<div class="mb-5"></div>
 {% endblock %}
