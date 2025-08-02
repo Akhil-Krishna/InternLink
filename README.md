@@ -183,26 +183,26 @@ The application will be available at `http://localhost:5000`
 
 ### Key Workflows
 
-#### Student Journey
-1. Register account with personal and academic details
-2. Upload profile picture and resume (optional)
-3. Browse available internships using filters
-4. Apply to desired positions with cover letters
-5. Track application status and receive feedback
+#### Student
+1. Register account with username , resume etc details
+2. Upload profile picture and resume (which is optional)
+3. Go through available internships and search based on category , duration and location
+4. Apply to your interested internship by uploading specific resumes and cover letter
+5. Student can then track their all applications and also can see feedbacks
 
-#### Employer Journey
-1. Login with employer credentials
-2. View internships posted by your organization
-3. Review student applications with filtering options
-4. Accept or reject applications with feedback
-5. Manage company profile and information
+#### Employer
+1. Login with employer username and password
+2. Can view all internships posted by that organisation
+3. Can review student applications for each role and also based on filters
+4. Accept or reject applications by adding extra feedback
+5. View and edit profile
 
 #### Administrator Journey
-1. Login with admin credentials
-2. Monitor platform statistics on dashboard
-3. View and filter all users across the system
+1. Login with admin username and password
+2. On the dashboard : Can see all the stats of no of students, employers , internship and applications
+3. See the list of users and filter them based on their details
 4. Review all internship applications
-5. Manage user account statuses
+5. Manage user account : ie , activate and deactivate them
 
 ## Configuration Options
 
@@ -220,29 +220,6 @@ The application supports the following file types:
 - **File Security**: Secure filename handling and upload validation
 - **Password Hashing**: Bcrypt encryption for all passwords
 - **Email Verification**
-
-## Troubleshooting
-
-### Common Issues
-
-**Database Connection Errors**:
-- Verify MySQL server is okay
-- Check connection info in `connect.py`
-- Ensure database exist and is populated
-
-**File Upload Issues**:
-- Verify file size limits and recheck the file properties
-- Ensure allowed file extensions
-
-**Login Problems**:
-- Confirm user account exists in db
-- Verify password 
-- Check account status is 'active' , only active accounts can login
-
-**Template Error**:
-- Ensure all html files are placed inside templates
-- Verify Bootstrap CSS and Js scripts are specified in base.html
-  
 
 ## License
 
