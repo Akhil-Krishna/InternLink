@@ -30,7 +30,7 @@ InternLink is a web app for internship management where it provides a free platf
 - **Security**: Flask-Bcrypt for password hashing
 - **File Handling**: Werkzeug for secure file uploads
 
-## Installation Guide
+## Setup Instruction
 
 ### Prerequisites
 
@@ -40,23 +40,22 @@ Before setting up, install the following:
 - pip (Python package installer)
 - Git
 
-### Step 1: Clone the Repository
+### Step 1: Clone the Repo
 
 ```bash
 git clone https://github.com/../InternLink.git
 cd InternLink
 ```
 
-### Step 2: Set Up Virtual Environment
+### Step 2: Set Up Virtual Env either using venv through command palette or cmd
 
 ```bash
-# Create virtual environment
 python -m venv env
 
-# Activate virtual environment
-# On Windows:
+# Activate virtual env
+# Windows:
 env\Scripts\activate
-# On macOS/Linux:
+# macOS/Linux:
 source env/bin/activate
 ```
 
@@ -66,10 +65,10 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-### Step 4: Database Setup
+### Step 4: Database Setup (2 ways)
 
 1. **Create Database**:
-   - Open MySQL Workbench or cmd
+   - Open cmd or mysql workbench
     ```sql
       CREATE DATABASE internlink;
     ```
@@ -80,11 +79,17 @@ pip install -r requirements.txt
    mysql -u <username> -p internlink < create_database.sql
    ```
 
-2. **Populate Database**:
+3. **Populate Database**:
    - Move to folder containg populate_database.sql (db in this case)
    - Run the population script to add sample data:
    ```sql
    mysql -u <username> -p internlink < populate_database.sql
+   ```
+or
+1. **Open mysql in cmd and type the following command**
+   ```sql
+   source path\db\create_database.sql
+   source path\db\populate_database.sql
    ```
 
 ### Step 5: Configure Database Connection
@@ -93,7 +98,7 @@ pip install -r requirements.txt
 2. Add the database connection details:
 
 ```python
-import mysql.connector
+import mysql.connector # or pymysql
 
 def getCursor():
     db = mysql.connector.connect(
@@ -128,11 +133,24 @@ The application will be available at `http://localhost:5000`
 
 ### PythonAnywhere Deployment
 
-1. Upload all the files except -> `connect.py` and virtual env
+1. Upload all the files except -> `connect.py` and virtual env using git clone
 2. Create new `connect.py` with PythonAnywhere database settings
-3. Set up MySQL database in PythonAnywhere - Open Mysql console there and use the 2 sql scripts to create and populate it
-4. Configure WSGI file to point to your Flask app
-5. Set up static file mappings for the uploads
+   ```bash
+   import pymysql
+
+   def getCursor():
+       db = pymysql.connect(
+           host="angelthomas1165399.mysql.pythonanywhere-services.com",
+           user="angelthomas1165399",
+           password="pass",
+           database="angelthomas1165399$internlink"
+       )
+       return db.cursor(), db
+
+   ``` 
+4. Set up MySQL database in PythonAnywhere - Open Mysql console there and use the 2 sql scripts to create and populate it
+5. Configure WSGI file to point out the flask app 
+6. Set up static file mappings for the uploads
 
 
 ## Usage Instructions
